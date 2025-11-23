@@ -10,195 +10,140 @@
 
 	{{-- Fonts --}}
 	<link rel="preconnect" href="https://fonts.bunny.net">
-	<link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+	<link href="https://fonts.bunny.net/css?family=inter:400,500,600,700&display=swap" rel="stylesheet" />
 
 	{{-- Scripts --}}
 	@livewireStyles
 	@vite(['resources/css/app.css', 'resources/js/app.js'])
+	<style>
+		[x-cloak] {
+			display: none !important;
+		}
+	</style>
 </head>
 
-<body class="font-sans antialiased" x-data="{ sidebarOpen: false }">
-	<div class="min-h-screen bg-cool dark:bg-gray-900">
-		<div class="flex">
+<body class="font-sans antialiased bg-gray-50 text-slate-600 dark:bg-slate-900 dark:text-slate-400"
+	x-data="{ sidebarOpen: false }">
+	<div class="min-h-screen flex">
 
-			{{-- Sidebar (overlay on mobile, fixed on larger screens) --}}
-			<div x-bind:class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
-				class="fixed inset-y-0 left-0 z-30 h-screen text-white transition-transform transform translate-x-0 w-72 bg-slate-950 lg:translate-x-0 lg:z-auto lg:w-72 lg:fixed">
+		{{-- Sidebar --}}
+		<div x-bind:class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}"
+			class="fixed inset-y-0 left-0 z-30 w-64 bg-slate-900 text-white transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 shadow-xl lg:shadow-none border-r border-slate-800">
 
-				<div class="flex flex-col justify-between h-screen p-4">
-					<div>
-						<div class="pt-3 pb-6 pl-6">
-							<p class="text-2xl font-bold">Invoo</p>
+			<div class="flex flex-col h-full">
+				<!-- Logo -->
+				<div class="flex items-center justify-center h-16 border-b border-slate-800">
+					<span class="text-xl font-bold tracking-wider uppercase text-indigo-500">Invoo</span>
+				</div>
+
+				<!-- Nav Links -->
+				<nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
+					<x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" icon="dashboard">
+						{{ __('Dashboard') }}
+					</x-nav-link>
+
+					<div class="pt-4 pb-2">
+						<p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+							{{ __('Business') }}
+						</p>
+					</div>
+
+					<x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.*')"
+						icon="document-text">
+						{{ __('Invoices') }}
+					</x-nav-link>
+
+					<x-nav-link :href="route('quotes.index')" :active="request()->routeIs('quotes.*')"
+						icon="clipboard-document-list">
+						{{ __('Quotes') }}
+					</x-nav-link>
+
+					<x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.*')"
+						icon="users">
+						{{ __('Customers') }}
+					</x-nav-link>
+
+					<div class="pt-4 pb-2">
+						<p class="px-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+							{{ __('Configuration') }}
+						</p>
+					</div>
+
+					<x-nav-link :href="route('settings.edit')" :active="request()->routeIs('settings.*')"
+						icon="cog-6-tooth">
+						{{ __('Settings') }}
+					</x-nav-link>
+				</nav>
+
+				<!-- User Profile / Footer -->
+				<div class="p-4 border-t border-slate-800">
+					<div class="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-800 transition-colors cursor-pointer"
+						x-data="{ open: false }" @click="open = !open" @click.outside="open = false">
+						<div
+							class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-bold text-sm">
+							{{ substr(Auth::user()->name, 0, 1) }}
+						</div>
+						<div class="flex-1 min-w-0">
+							<p class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</p>
+							<p class="text-xs text-slate-400 truncate">{{ Auth::user()->email }}</p>
 						</div>
 
-						<ul class="flex flex-col space-y-1">
-							<li>
-								<a @class([
-									'bg-white/10' => request()->routeIs('dashboard'),
-									'flex items-center gap-x-3.5
-																																																									py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none
-																																																									focus:bg-white/10 dark:bg-neutral-700 dark:text-white'
-								])
-									href="{{ route('dashboard') }}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-										stroke-linejoin="round" class="opacity-50 size-5">
-										<path d="M15.6 2.7a10 10 0 1 0 5.7 5.7" />
-										<circle cx="12" cy="12" r="2" />
-										<path d="M13.4 10.6 19 5" />
-									</svg>
-									{{ __('Dashboard') }}
-								</a>
-							</li>
-							<li>
-								<a @class(['bg-white/10' => request()->routeIs(patterns: 'invoices.index'), 'flex items-center gap-x-3.5 py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none focus:bg-white/10 dark:bg-neutral-700 dark:text-white'])
-									href="{{ route('invoices.index') }}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-										stroke-linejoin="round" class="opacity-50 size-5">
-										<path
-											d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z" />
-										<path
-											d="m6.08 9.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59" />
-										<path
-											d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59" />
-									</svg>
-									{{ __('Invoices') }}
-								</a>
-							</li>
-							<li>
-								<a @class(['bg-white/10' => request()->routeIs('customers.index'), 'flex items-center gap-x-3.5 py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none focus:bg-white/10 dark:bg-neutral-700 dark:text-white'])
-									href="{{ route('customers.index') }}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-										stroke-linejoin="round" class="opacity-50 size-5">
-										<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-										<circle cx="9" cy="7" r="4" />
-										<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-										<path d="M16 3.13a4 4 0 0 1 0 7.75" />
-									</svg>
-									{{ __('Customers') }}
-								</a>
-							</li>
-							<li>
-								<a @class(['bg-white/10' => request()->routeIs('settings.edit'), 'flex items-center gap-x-3.5 py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none focus:bg-white/10 dark:bg-neutral-700 dark:text-white'])
-									href="{{ route('settings.edit') }}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-										stroke-linejoin="round" class="opacity-50 size-5">
-										<path
-											d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-										<circle cx="12" cy="12" r="3" />
-									</svg>
-									{{ __('Settings') }}
-								</a>
-							</li>
-						</ul>
+						<!-- Dropdown Menu (Simplified for sidebar footer) -->
+						<div x-show="open" x-transition
+							class="absolute bottom-16 left-4 w-56 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-gray-100 dark:border-slate-700 py-1 z-50">
+							<a href="{{ route('profile.edit') }}"
+								class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700">
+								{{ __('Profile') }}
+							</a>
+							<form method="POST" action="{{ route('logout') }}">
+								@csrf
+								<button type="submit"
+									class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:hover:bg-slate-700">
+									{{ __('Log Out') }}
+								</button>
+							</form>
+						</div>
 					</div>
-
-					<div class="p-4 rounded-lg text-slate-400 bg-slate-900">
-						<div>Development Build</div>
-						<div>Version 0.1</div>
-					</div>
-
 				</div>
 			</div>
+		</div>
 
-			{{-- Overlay (for small screens) --}}
-			<div @click="sidebarOpen = false" x-bind:class="{'block': sidebarOpen, 'hidden': !sidebarOpen}"
-				class="fixed inset-0 z-20 bg-black bg-opacity-50 lg:hidden" x-cloak>
-			</div>
+		{{-- Mobile Overlay --}}
+		<div x-show="sidebarOpen" @click="sidebarOpen = false" x-transition.opacity
+			class="fixed inset-0 z-20 bg-black/50 lg:hidden"></div>
 
-			{{-- Content --}}
-			<div class="flex-1 lg:ml-72">
-				{{-- Offset content by the sidebar width on larger screens --}}
-				{{-- Toggle Button (visible on small screens) --}}
-				<div
-					class="flex items-center justify-between px-4 py-2 bg-white border-b border-gray-200 shadow dark:bg-gray-800">
-					<div>
-						{{-- Show toggle button only on small screens --}}
-						<button @click="sidebarOpen = !sidebarOpen" class="p-2 text-gray-500 rounded lg:hidden">
-							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-								stroke-linejoin="round" class="size-6">
-								<rect width="18" height="18" x="3" y="3" rx="2" />
-								<path d="M9 3v18" />
-								<path d="m14 9 3 3-3 3" />
-							</svg>
-						</button>
-					</div>
-					<div class="flex items-center gap-2">
-						<x-dropdown align="right" width="48">
-							<x-slot name="trigger">
-								<button
-									class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
-									<div class="uppercase">{{ app()->getLocale() }}</div>
-									<div class="ms-1">
-										<svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 20 20">
-											<path fill-rule="evenodd"
-												d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-												clip-rule="evenodd" />
-										</svg>
-									</div>
-								</button>
-							</x-slot>
-							<x-slot name="content">
-								<x-dropdown-link :href="route('lang.switch', 'en')">English</x-dropdown-link>
-								<x-dropdown-link :href="route('lang.switch', 'fr')">Français</x-dropdown-link>
-								<x-dropdown-link :href="route('lang.switch', 'ar')">العربية</x-dropdown-link>
-							</x-slot>
-						</x-dropdown>
+		{{-- Main Content --}}
+		<div class="flex-1 flex flex-col min-w-0 overflow-hidden">
 
-						<x-dropdown align="right" width="48">
-							<x-slot name="trigger">
-								<button
-									class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
-									<div>{{ Auth::user()->name }}</div>
+			{{-- Top Header (Mobile Toggle + Page Title/Actions) --}}
+			<header
+				class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8">
+				<div class="flex items-center gap-4">
+					<button @click="sidebarOpen = true"
+						class="lg:hidden text-gray-500 hover:text-gray-700 dark:text-slate-400 dark:hover:text-slate-200">
+						<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+								d="M4 6h16M4 12h16M4 18h16"></path>
+						</svg>
+					</button>
 
-									<div class="ms-1">
-										<svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 20 20">
-											<path fill-rule="evenodd"
-												d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-												clip-rule="evenodd" />
-										</svg>
-									</div>
-								</button>
-							</x-slot>
-
-							<x-slot name="content">
-								<x-dropdown-link :href="route('profile.edit')">
-									{{ __('Profile') }}
-								</x-dropdown-link>
-
-								<!-- Authentication -->
-								<form method="POST" action="{{ route('logout') }}">
-									@csrf
-
-									<x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-										{{ __('Log Out') }}
-									</x-dropdown-link>
-								</form>
-							</x-slot>
-						</x-dropdown>
-					</div>
-				</div>
-				@isset($header)
-					<header class="bg-white border-b border-gray-200 dark:bg-gray-800">
-						<div class="px-4 py-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+					@isset($header)
+						<div class="font-semibold text-xl text-gray-800 dark:text-white leading-tight">
 							{{ $header }}
 						</div>
-					</header>
-				@endisset
+					@endisset
+				</div>
 
-				<x-alert class="border-t-0 border-b rounded-none border-x-0 border-r-none" />
+				<div class="flex items-center gap-4">
+					<!-- Language Switcher could go here -->
+				</div>
+			</header>
 
-				<main>
-					{{ $slot }}
-				</main>
-			</div>
+			{{-- Main Scrollable Area --}}
+			<main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-slate-950 p-4 sm:p-6 lg:p-8">
+				<x-alert class="mb-4" />
+				{{ $slot }}
+			</main>
 		</div>
 	</div>
 	@livewireScriptConfig

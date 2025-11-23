@@ -18,6 +18,9 @@
                     <x-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.index')">
                         {{ __('Invoices') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('quotes.index')" :active="request()->routeIs('quotes.index')">
+                        {{ __('Devis') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.index')">
                         {{ __('Customers') }}
                     </x-nav-link>
@@ -77,7 +80,7 @@
                                 @csrf
 
                                 <x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
-                                                    this.closest('form').submit();">
+                                                        this.closest('form').submit();">
                                     {{ __('Log Out') }}
                                 </x-dropdown-link>
                             </form>
@@ -111,6 +114,9 @@
             <x-responsive-nav-link :href="route('invoices.index')" :active="request()->routeIs('invoices.index')">
                 {{ __('Invoices') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('quotes.index')" :active="request()->routeIs('quotes.index')">
+                {{ __('Devis') }}
+            </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('customers.index')" :active="request()->routeIs('customers.index')">
                 {{ __('Customers') }}
             </x-responsive-nav-link>
@@ -137,7 +143,7 @@
                         @csrf
 
                         <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault();
-                                            this.closest('form').submit();">
+                                                this.closest('form').submit();">
                             {{ __('Log Out') }}
                         </x-responsive-nav-link>
                     </form>

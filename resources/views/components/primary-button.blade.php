@@ -1,13 +1,13 @@
 @props(['href' => null])
 
 @php
-	$classes = 'py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-indigo-600 text-white hover:bg-indigo-700 focus:outline-none focus:bg-indigo-700 disabled:opacity-50 disabled:pointer-events-none';
+	$classes = 'inline-flex items-center justify-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:bg-indigo-500 active:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 transition ease-in-out duration-150 shadow-sm';
 @endphp
 
 @if ($href)
-	<x-link href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
+	<a href="{{ $href }}" {{ $attributes->merge(['class' => $classes]) }}>
 		{{ $slot }}
-	</x-link>
+	</a>
 @else
 	<button {{ $attributes->merge(['type' => 'submit', 'class' => $classes]) }}>
 		{{ $slot }}

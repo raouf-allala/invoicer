@@ -1,244 +1,126 @@
 <x-layouts.sidebar>
-	<section class="py-16 bg-indigo-500 bg-center bg-cover" style="background-image: url('/images/cover.png');">
+	<div class="py-10">
+		<div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
 
-		<div class="mx-auto space-y-12 max-w-7xl sm:px-6 lg:px-8">
-
-			<div class="text-white">
-				<div class="mb-2 text-3xl md:text-4xl">
-					{{ __('Welcome back') }}, {{ Auth::user()->name }}
-				</div>
-				<p>{{ __('Here\'s what\'s happening with your business today.') }}</p>
+			<!-- Header -->
+			<div class="mb-8">
+				<h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('Dashboard') }}</h1>
+				<p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+					{{ __('Welcome back') }}, {{ Auth::user()->name }}.
+					{{ __('Here\'s what\'s happening with your business today.') }}
+				</p>
 			</div>
 
+			<!-- Stats Grid -->
+			<div class="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-2 lg:grid-cols-4">
 
+				<!-- Revenue -->
+				<x-dashboard.stat-card title="{{ __('Total Revenue') }}"
+					value="{{ Illuminate\Support\Number::abbreviate($paidInvoicesTotal) }} DZD" color="emerald">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
-			<div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+				<!-- Pending Revenue -->
+				<x-dashboard.stat-card title="{{ __('Pending Revenue') }}"
+					value="{{ Illuminate\Support\Number::abbreviate($currentInvoicesTotal) }} DZD" color="amber">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
 				<!-- Net Invoices -->
-				<div
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="w-6 h-6 text-indigo-600 dark:text-neutral-400" fill="none" stroke="currentColor"
-								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path
-									d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
-								<path d="m3.3 7 8.7 5 8.7-5" />
-								<path d="M12 22V12" />
-							</svg>
-						</div>
-						<div class="grow">
-							<div class="flex items-center gap-x-2">
-								<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-									{{ __('Net Invoices') }}
-								</p>
-								<div class="hs-tooltip">
-									<div class="hs-tooltip-toggle">
-										<svg class="text-gray-500 shrink-0 size-4 dark:text-neutral-500"
-											xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-											viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-											stroke-linecap="round" stroke-linejoin="round">
-											<circle cx="12" cy="12" r="10"></circle>
-											<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-											<path d="M12 17h.01"></path>
-										</svg>
-										<span
-											class="absolute z-10 invisible hidden inline-block px-2 py-1 text-xs font-medium text-white transition-opacity bg-gray-900 rounded shadow-sm opacity-0 hs-tooltip-content hs-tooltip-shown:opacity-100 hs-tooltip-shown:visible dark:bg-neutral-700"
-											role="tooltip" data-popper-placement="top"
-											style="position: fixed; inset: auto auto 0px 0px; margin: 0px; transform: translate(132px, -138px);">
-											Excluding terminated invoices.
-										</span>
-									</div>
-								</div>
-							</div>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								{{ $netInvoices }}
-							</h3>
-						</div>
-					</div>
-				</div>
-
-				<!-- Paid Invoices -->
-				<x-link :href="route('invoices.index', ['status' => 'paid'])"
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-teal-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-green-600" fill="none"
-								stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path
-									d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
-								<path d="m9 12 2 2 4-4" />
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Paid Invoices') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								{{ $paidInvoices }}
-							</h3>
-						</div>
-					</div>
-				</x-link>
-
-				<!-- Current Invoices -->
-				<div
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="w-6 h-6 text-indigo-600 dark:text-neutral-400" fill="none" stroke="currentColor"
-								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
-								<path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Current Invoices') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								{{ $currentInvoices }}
-							</h3>
-						</div>
-					</div>
-				</div>
-
-				<!-- Overdue Invoices -->
-				<x-link :href="route('invoices.index', ['status' => 'overdue'])"
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 rounded-lg shrink-0 bg-fuchsia-100 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-pink-600 dark:text-neutral-400"
-								fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-								stroke-linejoin="round">
-								<circle cx="12" cy="12" r="10" />
-								<polyline points="12 6 12 12 16 14" />
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Overdue Invoices') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								{{ $overdueInvoices }}
-							</h3>
-						</div>
-					</div>
-				</x-link>
+				<x-dashboard.stat-card title="{{ __('Net Invoices') }}" value="{{ $netInvoices }}" color="indigo">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
 				<!-- Total Customers -->
-				<div
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="w-6 h-6 text-indigo-600 dark:text-neutral-400" fill="none" stroke="currentColor"
-								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-								<circle cx="9" cy="7" r="4"></circle>
-								<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-								<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Total Customers') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								{{ $totalCustomers }}
-							</h3>
-						</div>
-					</div>
-				</div>
-
-				<!-- Paid Invoices Total -->
-				<div
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="w-6 h-6 text-indigo-600 dark:text-neutral-400" fill="none" stroke="currentColor"
-								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" x2="12" y1="2" y2="22" />
-								<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Paid Invoices Total') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								DZD {{ Illuminate\Support\Number::abbreviate($paidInvoicesTotal) }}
-							</h3>
-						</div>
-					</div>
-				</div>
-
-				<!-- Current Invoices Total -->
-				<div
-					class="flex flex-col bg-white border shadow-sm rounded-xl dark:bg-neutral-900 dark:border-neutral-800">
-					<div class="flex flex-col gap-4 p-4 md:p-6 lg:flex-row lg:items-center">
-						<div
-							class="flex items-center justify-center w-12 h-12 bg-indigo-100 rounded-lg shrink-0 dark:bg-neutral-800">
-							<svg xmlns="http://www.w3.org/2000/svg"
-								class="w-6 h-6 text-indigo-600 dark:text-neutral-400" fill="none" stroke="currentColor"
-								stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-								<line x1="12" x2="12" y1="2" y2="22" />
-								<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-							</svg>
-						</div>
-						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								{{ __('Current Invoices Total') }}
-							</p>
-							<h3
-								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								DZD {{ Illuminate\Support\Number::abbreviate($currentInvoicesTotal) }}
-							</h3>
-						</div>
-					</div>
-				</div>
-
+				<x-dashboard.stat-card title="{{ __('Total Customers') }}" value="{{ $totalCustomers }}" color="blue">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
 			</div>
 
+			<!-- Secondary Stats Grid -->
+			<div class="grid grid-cols-1 gap-6 mb-8 sm:grid-cols-3">
+				<!-- Paid Invoices Count -->
+				<x-dashboard.stat-card title="{{ __('Paid Invoices') }}" value="{{ $paidInvoices }}" color="green"
+					description="Fully paid invoices">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
-		</div>
-	</section>
+				<!-- Current Invoices Count -->
+				<x-dashboard.stat-card title="{{ __('Current Invoices') }}" value="{{ $currentInvoices }}"
+					color="yellow" description="Awaiting payment">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 
-	<div class="py-12">
-		<div class="mx-auto space-y-6 max-w-7xl sm:px-6 lg:px-8">
-			<div class="flex items-center justify-between">
-				<h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
-					{{ __('Recent Invoices') }}
-				</h2>
-				<x-primary-button href="{{ route('invoices.index') }}">
-					{{ __('View All') }}
-				</x-primary-button>
+				<!-- Overdue Invoices Count -->
+				<x-dashboard.stat-card title="{{ __('Overdue Invoices') }}" value="{{ $overdueInvoices }}" color="red"
+					description="Past due date">
+					<x-slot name="icon">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+							stroke="currentColor" stroke-width="2">
+							<path stroke-linecap="round" stroke-linejoin="round"
+								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</x-slot>
+				</x-dashboard.stat-card>
 			</div>
 
-			<div class="space-y-3">
-				@forelse ($invoices as $invoice)
-					<x-invoices.list-item :invoice="$invoice" />
-				@empty
-					<x-invoices.empty />
-				@endforelse
+			<!-- Recent Activity -->
+			<div class="bg-white border border-gray-100 shadow-sm rounded-2xl dark:bg-gray-800 dark:border-gray-700">
+				<div class="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ __('Recent Invoices') }}</h2>
+					<a href="{{ route('invoices.index') }}"
+						class="text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+						{{ __('View All') }} &rarr;
+					</a>
+				</div>
+				<div class="p-6">
+					<div class="space-y-4">
+						@forelse ($invoices as $invoice)
+							<x-invoices.list-item :invoice="$invoice" />
+						@empty
+							<x-invoices.empty />
+						@endforelse
+					</div>
+				</div>
 			</div>
 
 		</div>
 	</div>
-	</x-layouts.side>
+</x-layouts.sidebar>

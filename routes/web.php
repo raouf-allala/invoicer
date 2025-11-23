@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\QuoteController;
 use App\Http\Controllers\TinkerController;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +54,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('notes/{note}', [NoteController::class, 'destroy'])->name('notes.destroy');
     Route::get('/settings', [SettingsController::class, 'edit'])->name('settings.edit');
     Route::patch('/settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    // Quotes
+    Route::resource('quotes', QuoteController::class);
+    Route::post('/quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
 });
 
 require __DIR__.'/auth.php';

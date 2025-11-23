@@ -95,7 +95,7 @@
 				<tr class="break-inside-avoid">
 					<td class="py-2 px-2 border border-gray-400 text-center font-bold">{{ $index + 1 }}</td>
 					<td class="py-2 px-2 border border-gray-400">
-						<div class="font-bold">{!! $item['name'] !!}</div>
+						<div>{!! $item['name'] !!}</div>
 					</td>
 					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
 						{{ number_format($item['rate'], 2, '.', ' ') }}
