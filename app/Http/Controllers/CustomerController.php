@@ -56,4 +56,11 @@ class CustomerController extends Controller
 
         return redirect()->route('customers.edit', $customer)->with('alert', alertify('All set! Everything is up to date.'));
     }
+
+    public function destroy(Customer $customer)
+    {
+        $customer->delete();
+
+        return redirect()->route('customers.index')->with('alert', alertify('Customer deleted successfully!'));
+    }
 }
