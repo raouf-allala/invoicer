@@ -10,7 +10,21 @@ class Settings extends Model
 	use HasFactory;
 	public $timestamps = false;
 
-	protected $guarded = [];
+	protected $fillable = [
+        'name',
+        'email',
+        'phone',
+        'website',
+        'address',
+        'logo',
+        'rc',
+        'nif',
+        'ai',
+        'nis',
+        'capital',
+        'bank_account',
+        'stamp',
+    ];
 
 	public function user()
 	{

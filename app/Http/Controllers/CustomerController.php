@@ -2,77 +2,58 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Customer;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreCustomerRequest;
 use App\Http\Requests\UpdateCustomerRequest;
+use App\Models\Customer;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
-	use AuthorizesRequests;
+    use AuthorizesRequests;
 
-	public function index()
-	{
-		$customers = Auth::user()->customers()->latest()->simplePaginate(18)->withQueryString();
-		return view('customers.index', compact('customers'));
-	}
+    public function index()
+    {
+        $customers = Auth::user()->customers()->latest()->simplePaginate(18)->withQueryString();
 
-	public function create()
-	{
-		return view('customers.create');
-	}
+        return view('customers.index', compact('customers'));
+    }
 
-	public function show(Customer $customer)
-	{
-		$this->authorize('view', $customer);
-		$invoices = $customer->invoices()->latest()->simplePaginate(10);
-		return view('customers.show', compact('customer', 'invoices'));
-	}
+    public function create()
+    {
+        return view('customers.create');
+    }
 
-	public function store(StoreCustomerRequest $request)
-	{
-		$validated = $request->validated();
+    public function show(Customer $customer)
+    {
+        $this->authorize('view', $customer);
+        $invoices = $customer->invoices()->latest()->simplePaginate(10);
 
-		$validated = $this->validatedImageUpload($request->validated(), $request);
+        return view('customers.show', compact('customer', 'invoices'));
+    }
 
-		$customer = Auth::user()->customers()->create($validated);
+    public function store(StoreCustomerRequest $request)
+    {
+        $validated = $request->validated();
 
-		return redirect()->route('customers.edit', $customer)->with('alert', alertify('Customer created successfully!'));
-	}
+        $customer = Auth::user()->customers()->create($validated);
 
-	public function edit(Customer $customer)
-	{
-		$this->authorize('update', $customer);
+        return redirect()->route('customers.edit', $customer)->with('alert', alertify('Customer created successfully!'));
+    }
 
-		return view('customers.edit', compact('customer'));
-	}
+    public function edit(Customer $customer)
+    {
+        $this->authorize('update', $customer);
 
-	public function update(UpdateCustomerRequest $request, Customer $customer)
-	{
-		$validated = $request->validated();
+        return view('customers.edit', compact('customer'));
+    }
 
-		$validated = $this->validatedImageUpload($request->validated(), $request);
+    public function update(UpdateCustomerRequest $request, Customer $customer)
+    {
+        $validated = $request->validated();
 
-		$customer->update($validated);
+        $customer->update($validated);
 
-		return redirect()->route('customers.edit', $customer)->with('alert', alertify('All set! Everything is up to date.'));
-	}
-
-	protected function validatedImageUpload(array $validated, Request $request, Customer $customer = null): array
-	{
-		if ($request->hasFile('image')) {
-			$file = $request->file('image');
-			$path = $file->store('uploads', 'public');
-			$validated['image'] = $path;
-
-			if ($customer && $customer->image) {
-				Storage::disk('public')->delete($customer->image);
-			}
-		}
-
-		return $validated;
-	}
+        return redirect()->route('customers.edit', $customer)->with('alert', alertify('All set! Everything is up to date.'));
+    }
 }

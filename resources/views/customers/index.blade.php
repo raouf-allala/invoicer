@@ -12,7 +12,7 @@
 					<path d="M5 12h14" />
 					<path d="M12 5v14" />
 				</svg>
-				Create
+				{{ __('Create') }}
 			</x-primary-button>
 		</div>
 	</x-slot>
@@ -27,7 +27,6 @@
 							<div class="p-4 bg-white border border-gray-200 sm:p-8 dark:bg-gray-800 sm:rounded-2xl">
 								<div class="grid items-center gap-4">
 									<div class="flex items-center flex-1 gap-4">
-										<x-avatar :customer="$customer" />
 										<div class="space-y-0.5">
 											<div class="font-normal">{{ $customer->name }}</div>
 											<div class="text-gray-500">{{ $customer->email }}</div>

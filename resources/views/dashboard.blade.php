@@ -5,9 +5,9 @@
 
 			<div class="text-white">
 				<div class="mb-2 text-3xl md:text-4xl">
-					Hello there, {{ Auth::user()->name }}
+					{{ __('Welcome back') }}, {{ Auth::user()->name }}
 				</div>
-				<p>Here's a quick summary of your latest stats.</p>
+				<p>{{ __('Here\'s what\'s happening with your business today.') }}</p>
 			</div>
 
 
@@ -31,8 +31,9 @@
 						</div>
 						<div class="grow">
 							<div class="flex items-center gap-x-2">
-								<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">Net
-									Invoices</p>
+								<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
+									{{ __('Net Invoices') }}
+								</p>
 								<div class="hs-tooltip">
 									<div class="hs-tooltip-toggle">
 										<svg class="text-gray-500 shrink-0 size-4 dark:text-neutral-500"
@@ -74,7 +75,8 @@
 							</svg>
 						</div>
 						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">Paid Invoices
+							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
+								{{ __('Paid Invoices') }}
 							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
@@ -98,8 +100,9 @@
 							</svg>
 						</div>
 						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">Current
-								Invoices</p>
+							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
+								{{ __('Current Invoices') }}
+							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
 								{{ $currentInvoices }}
@@ -122,8 +125,9 @@
 							</svg>
 						</div>
 						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">Overdue
-								Invoices</p>
+							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
+								{{ __('Overdue Invoices') }}
+							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
 								{{ $overdueInvoices }}
@@ -148,8 +152,9 @@
 							</svg>
 						</div>
 						<div class="grow">
-							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">Total
-								Customers</p>
+							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
+								{{ __('Total Customers') }}
+							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
 								{{ $totalCustomers }}
@@ -173,11 +178,11 @@
 						</div>
 						<div class="grow">
 							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								Paid Invoices Total
+								{{ __('Paid Invoices Total') }}
 							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								${{ Illuminate\Support\Number::abbreviate($paidInvoicesTotal) }}
+								DZD {{ Illuminate\Support\Number::abbreviate($paidInvoicesTotal) }}
 							</h3>
 						</div>
 					</div>
@@ -198,11 +203,11 @@
 						</div>
 						<div class="grow">
 							<p class="text-xs tracking-wide text-gray-600 uppercase dark:text-neutral-500">
-								Current Invoices Total
+								{{ __('Current Invoices Total') }}
 							</p>
 							<h3
 								class="mt-2 text-xl font-medium text-gray-700 sm:text-2xl lg:text-3xl dark:text-neutral-200">
-								${{ Illuminate\Support\Number::abbreviate($currentInvoicesTotal) }}
+								DZD {{ Illuminate\Support\Number::abbreviate($currentInvoicesTotal) }}
 							</h3>
 						</div>
 					</div>
@@ -222,7 +227,7 @@
 					{{ __('Recent Invoices') }}
 				</h2>
 				<x-primary-button href="{{ route('invoices.index') }}">
-					View All
+					{{ __('View All') }}
 				</x-primary-button>
 			</div>
 

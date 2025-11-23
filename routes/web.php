@@ -14,6 +14,13 @@ if (app()->environment('local')) {
 	Route::get('/tinker', [TinkerController::class, 'index'])->name('tinker');
 }
 
+Route::get('/lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'fr', 'ar'])) {
+        session(['locale' => $locale]);
+    }
+    return back();
+})->name('lang.switch');
+
 Route::get('/', function () {
 	return view('welcome');
 });
@@ -33,6 +40,8 @@ Route::middleware('auth')->group(function () {
 	Route::get('/invoices/download/{invoice:invoice_number}', DownloadInvoiceController::class)->name('invoices.download');
 	Route::patch('/invoices/{invoice}/status', [InvoiceController::class, 'updateStatus'])
 		->name('invoices.update-status');
+    Route::get('/invoices/{invoice}/edit', [InvoiceController::class, 'edit'])->name('invoices.edit');
+    Route::put('/invoices/{invoice}', [InvoiceController::class, 'update'])->name('invoices.update');
 	Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
 	Route::get('/customers/create', [CustomerController::class, 'create'])->name('customers.create');
 	Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');

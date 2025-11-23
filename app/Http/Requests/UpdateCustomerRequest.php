@@ -33,6 +33,10 @@ class UpdateCustomerRequest extends FormRequest
 			'phone' => 'nullable|string|max:15',
 			'address' => 'nullable|string|max:255',
 			'image' => 'nullable|image|max:2048',
+			'rc' => 'nullable|string|max:255',
+			'nif' => 'nullable|string|max:255',
+			'ai' => 'nullable|string|max:255',
+			'nis' => 'nullable|string|max:255',
 		];
 	}
 }

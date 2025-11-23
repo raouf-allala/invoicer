@@ -48,6 +48,38 @@
 										:value="old('phone', $customer->phone)" />
 									<x-input-error class="mt-2" :messages="$errors->get('phone')" />
 								</div>
+
+								<!-- RC -->
+								<div>
+									<x-input-label for="rc" :value="__('RC')" />
+									<x-text-input id="rc" name="rc" type="text" class="block w-full mt-1"
+										:value="old('rc', $customer->rc)" />
+									<x-input-error class="mt-2" :messages="$errors->get('rc')" />
+								</div>
+
+								<!-- NIF -->
+								<div>
+									<x-input-label for="nif" :value="__('NIF')" />
+									<x-text-input id="nif" name="nif" type="text" class="block w-full mt-1"
+										:value="old('nif', $customer->nif)" />
+									<x-input-error class="mt-2" :messages="$errors->get('nif')" />
+								</div>
+
+								<!-- AI -->
+								<div>
+									<x-input-label for="ai" :value="__('AI')" />
+									<x-text-input id="ai" name="ai" type="text" class="block w-full mt-1"
+										:value="old('ai', $customer->ai)" />
+									<x-input-error class="mt-2" :messages="$errors->get('ai')" />
+								</div>
+
+								<!-- NIS -->
+								<div>
+									<x-input-label for="nis" :value="__('NIS')" />
+									<x-text-input id="nis" name="nis" type="text" class="block w-full mt-1"
+										:value="old('nis', $customer->nis)" />
+									<x-input-error class="mt-2" :messages="$errors->get('nis')" />
+								</div>
 							</div>
 
 							<!-- Address -->

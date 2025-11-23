@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() == 'ar' ? 'rtl' : 'ltr' }}">
 
 <head>
 	<meta charset="utf-8">
@@ -28,17 +28,17 @@
 				<div class="flex flex-col justify-between h-screen p-4">
 					<div>
 						<div class="pt-3 pb-6 pl-6">
-							<img class="w-24" src="{{ asset('images/logo.svg') }}" alt="logo" />
+							<p class="text-2xl font-bold">Invoo</p>
 						</div>
 
 						<ul class="flex flex-col space-y-1">
 							<li>
 								<a @class([
-	'bg-white/10' => request()->routeIs('dashboard'),
-	'flex items-center gap-x-3.5
-									py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none
-									focus:bg-white/10 dark:bg-neutral-700 dark:text-white'
-])
+									'bg-white/10' => request()->routeIs('dashboard'),
+									'flex items-center gap-x-3.5
+																																																									py-3 px-4 text-slate-300 rounded-lg hover:bg-white/10 focus:outline-none
+																																																									focus:bg-white/10 dark:bg-neutral-700 dark:text-white'
+								])
 									href="{{ route('dashboard') }}">
 									<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
 										fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -47,7 +47,7 @@
 										<circle cx="12" cy="12" r="2" />
 										<path d="M13.4 10.6 19 5" />
 									</svg>
-									Dashboard
+									{{ __('Dashboard') }}
 								</a>
 							</li>
 							<li>
@@ -63,7 +63,7 @@
 										<path
 											d="m6.08 14.5-3.5 1.6a1 1 0 0 0 0 1.81l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9a1 1 0 0 0 0-1.83l-3.5-1.59" />
 									</svg>
-									Invoices
+									{{ __('Invoices') }}
 								</a>
 							</li>
 							<li>
@@ -77,7 +77,7 @@
 										<path d="M22 21v-2a4 4 0 0 0-3-3.87" />
 										<path d="M16 3.13a4 4 0 0 1 0 7.75" />
 									</svg>
-									Customers
+									{{ __('Customers') }}
 								</a>
 							</li>
 							<li>
@@ -90,7 +90,7 @@
 											d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
 										<circle cx="12" cy="12" r="3" />
 									</svg>
-									Settings
+									{{ __('Settings') }}
 								</a>
 							</li>
 						</ul>
@@ -127,39 +127,63 @@
 							</svg>
 						</button>
 					</div>
-					<x-dropdown align="right" width="48">
-						<x-slot name="trigger">
-							<button
-								class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
-								<div>{{ Auth::user()->name }}</div>
+					<div class="flex items-center gap-2">
+						<x-dropdown align="right" width="48">
+							<x-slot name="trigger">
+								<button
+									class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+									<div class="uppercase">{{ app()->getLocale() }}</div>
+									<div class="ms-1">
+										<svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 20 20">
+											<path fill-rule="evenodd"
+												d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+												clip-rule="evenodd" />
+										</svg>
+									</div>
+								</button>
+							</x-slot>
+							<x-slot name="content">
+								<x-dropdown-link :href="route('lang.switch', 'en')">English</x-dropdown-link>
+								<x-dropdown-link :href="route('lang.switch', 'fr')">Français</x-dropdown-link>
+								<x-dropdown-link :href="route('lang.switch', 'ar')">العربية</x-dropdown-link>
+							</x-slot>
+						</x-dropdown>
 
-								<div class="ms-1">
-									<svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
-										viewBox="0 0 20 20">
-										<path fill-rule="evenodd"
-											d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-											clip-rule="evenodd" />
-									</svg>
-								</div>
-							</button>
-						</x-slot>
+						<x-dropdown align="right" width="48">
+							<x-slot name="trigger">
+								<button
+									class="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+									<div>{{ Auth::user()->name }}</div>
 
-						<x-slot name="content">
-							<x-dropdown-link :href="route('profile.edit')">
-								{{ __('Profile') }}
-							</x-dropdown-link>
+									<div class="ms-1">
+										<svg class="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg"
+											viewBox="0 0 20 20">
+											<path fill-rule="evenodd"
+												d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+												clip-rule="evenodd" />
+										</svg>
+									</div>
+								</button>
+							</x-slot>
 
-							<!-- Authentication -->
-							<form method="POST" action="{{ route('logout') }}">
-								@csrf
-
-								<x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-									{{ __('Log Out') }}
+							<x-slot name="content">
+								<x-dropdown-link :href="route('profile.edit')">
+									{{ __('Profile') }}
 								</x-dropdown-link>
-							</form>
-						</x-slot>
-					</x-dropdown>
+
+								<!-- Authentication -->
+								<form method="POST" action="{{ route('logout') }}">
+									@csrf
+
+									<x-dropdown-link :href="route('logout')" onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+										{{ __('Log Out') }}
+									</x-dropdown-link>
+								</form>
+							</x-slot>
+						</x-dropdown>
+					</div>
 				</div>
 				@isset($header)
 					<header class="bg-white border-b border-gray-200 dark:bg-gray-800">

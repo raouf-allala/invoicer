@@ -47,6 +47,38 @@
 										:value="old('phone')" />
 									<x-input-error class="mt-2" :messages="$errors->get('phone')" />
 								</div>
+
+								<!-- RC -->
+								<div>
+									<x-input-label for="rc" :value="__('RC')" />
+									<x-text-input id="rc" name="rc" type="text" class="block w-full mt-1"
+										:value="old('rc')" />
+									<x-input-error class="mt-2" :messages="$errors->get('rc')" />
+								</div>
+
+								<!-- NIF -->
+								<div>
+									<x-input-label for="nif" :value="__('NIF')" />
+									<x-text-input id="nif" name="nif" type="text" class="block w-full mt-1"
+										:value="old('nif')" />
+									<x-input-error class="mt-2" :messages="$errors->get('nif')" />
+								</div>
+
+								<!-- AI -->
+								<div>
+									<x-input-label for="ai" :value="__('AI')" />
+									<x-text-input id="ai" name="ai" type="text" class="block w-full mt-1"
+										:value="old('ai')" />
+									<x-input-error class="mt-2" :messages="$errors->get('ai')" />
+								</div>
+
+								<!-- NIS -->
+								<div>
+									<x-input-label for="nis" :value="__('NIS')" />
+									<x-text-input id="nis" name="nis" type="text" class="block w-full mt-1"
+										:value="old('nis')" />
+									<x-input-error class="mt-2" :messages="$errors->get('nis')" />
+								</div>
 							</div>
 
 
@@ -56,13 +88,6 @@
 								<x-textarea id="address" name="address"
 									class="block w-full mt-1">{{ old('address') }}</x-textarea>
 								<x-input-error class="mt-2" :messages="$errors->get('address')" />
-							</div>
-
-							<!-- Image -->
-							<div>
-								<x-input-label for="image" :value="__('Image')" />
-								<x-dp-input class="block w-full mt-1" name="image"></x-dp-input>
-								<x-input-error class="mt-2" :messages="$errors->get('image')" />
 							</div>
 
 							<!-- Submit Button -->

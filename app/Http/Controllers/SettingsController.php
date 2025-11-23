@@ -37,6 +37,13 @@ class SettingsController extends Controller
 			'address' => 'required|string',
 			'website' => 'nullable|url|max:255',
 			'logo' => 'nullable|image|max:2048',
+			'rc' => 'nullable|string|max:255',
+			'nif' => 'nullable|string|max:255',
+			'ai' => 'nullable|string|max:255',
+			'nis' => 'nullable|string|max:255',
+			'capital' => 'nullable|string|max:255',
+			'bank_account' => 'nullable|string|max:255',
+            'stamp' => 'nullable|image|max:2048',
 		]);
 
 		// Check if a new logo file is uploaded
@@ -46,6 +53,13 @@ class SettingsController extends Controller
 			$validated['logo'] = $path;
 		}
 
+        // Check if a new stamp file is uploaded
+        if ($request->hasFile('stamp')) {
+            $file = $request->file('stamp');
+            $path = $file->store('uploads', 'public');
+            $validated['stamp'] = $path;
+        }
+
 		$user = Auth::user();
 		$settings = $user->settings;
 
@@ -53,6 +67,11 @@ class SettingsController extends Controller
 		if ($settings && $settings->logo && $request->hasFile('logo')) {
 			Storage::disk('public')->delete($settings->logo);
 		}
+
+        // If there is an existing stamp, delete the old one
+        if ($settings && $settings->stamp && $request->hasFile('stamp')) {
+            Storage::disk('public')->delete($settings->stamp);
+        }
 
 		// Update or create the settings
 		$user->settings()->updateOrCreate(

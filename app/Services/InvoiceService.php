@@ -11,12 +11,12 @@ class InvoiceService
 
 	public static function composeCustomerDetails(Customer $customer): array
 	{
-		return $customer->only(['name', 'email', 'phone', 'address']);
+		return $customer->only(['name', 'email', 'phone', 'address', 'rc', 'nif', 'ai', 'nis']);
 	}
 
 	public static function composeIssuerDetails(Settings $settings): array
 	{
-		return $settings->only(['name', 'email', 'phone', 'address', 'website']);
+		return $settings->only(['name', 'email', 'phone', 'address', 'website', 'rc', 'nif', 'ai', 'nis', 'capital', 'bank_account']);
 	}
 
 	protected static function generateInvoiceNumber()

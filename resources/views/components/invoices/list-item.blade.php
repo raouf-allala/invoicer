@@ -18,7 +18,7 @@
 			<div class="flex flex-col flex-1 gap-2">
 				<div class="text-sm text-gray-500">Total</div>
 				<div class="text-lg font-medium md:text-base">
-					<x-money value="{{ $invoice->total }}" />
+					{{ $invoice->total }} DZD
 				</div>
 			</div>
 			<div class="flex flex-col flex-1 gap-2 lg:items-end">

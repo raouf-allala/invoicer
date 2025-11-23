@@ -1,141 +1,165 @@
 @props(['invoice', 'settings'])
 
-<!-- Card -->
-<div class="flex flex-col p-4 bg-white sm:p-10 dark:bg-neutral-800">
-	<!-- Header Section -->
-	<div class="flex items-start justify-between mb-4">
-		<div>
-			@if ($settings->logo)
-				<img class="mb-4 max-w-60 max-h-40" src="{{ asset('storage/' . $settings->logo) }}" alt="Company Logo">
-			@endif
-
-			<h1 class="text-lg font-semibold text-blue-700 dark:text-blue-300 md:text-xl">
-				{{ $invoice->issuer_details['name'] }}
-			</h1>
-			<p class="text-sm text-gray-600 dark:text-neutral-500">{{ $invoice->issuer_details['website'] }}</p>
-		</div>
-		<!-- Invoice Number-->
-		<div class="text-end">
-			<h2 class="text-2xl font-semibold text-gray-800 md:text-3xl dark:text-neutral-200">Invoice</h2>
-			<span class="block mt-1 text-gray-500 dark:text-neutral-500">#{{ $invoice->invoice_number }}</span>
-		</div>
-	</div>
-	<!-- End Header Section -->
-
-	<!-- Invoice Dates -->
-	<div class="">
-		<div class="space-y-2 sm:text-end">
-			<dl class="">
-				<dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Invoice Date</dt>
-				<dd class="col-span-2 text-gray-500 dark:text-neutral-500">{{ $invoice->created_at->format('Y-m-d') }}
-				</dd>
-			</dl>
-			<dl class="">
-				<dt class="col-span-3 font-semibold text-gray-800 dark:text-neutral-200">Due Date</dt>
-				<dd class="col-span-2 text-gray-500 dark:text-neutral-500">{{ $invoice->due_date }}</dd>
-			</dl>
-		</div>
-	</div>
-	<!-- End Invoice Dates -->
-
-	<!-- Bill From and Bill To Section (side by side) -->
-	<div class="grid gap-6 mt-8 sm:grid-cols-2">
-		<!-- Bill From (Issuer Details) -->
-		<div class="p-4 border rounded-lg">
-			<h3 class="font-semibold text-gray-800 dark:text-neutral-200">Bill From</h3>
-			<div class="text-lg font-semibold text-gray-800 dark:text-neutral-200">
-				{{ $invoice->issuer_details['name'] }}
-			</div>
-			<address class="not-italic text-gray-500 dark:text-neutral-500">
-				<span class="whitespace-pre-line">{{ $invoice->issuer_details['address'] }}</span>
-			</address>
-		</div>
-
-		<!-- Bill To (Customer Details) -->
-		<div class="p-4 border rounded-lg">
-			<h3 class="font-semibold text-gray-800 dark:text-neutral-200">Bill To</h3>
-			<div class="text-lg font-semibold text-gray-800 dark:text-neutral-200">
-
-				{{ $invoice->customer_details['name'] }}
-			</div>
-			<address class="not-italic text-gray-500 dark:text-neutral-500">
-				<span class="whitespace-pre-line">{{ $invoice->customer_details['address'] }}</span>
-			</address>
-		</div>
-	</div>
-	<!-- End Bill From and Bill To Section -->
-
-
-
-	<!-- Invoice Items Table -->
-	<div class="mt-8">
-		<div class="p-4 space-y-4 border border-gray-200 rounded-lg dark:border-neutral-700">
-			<!-- Table Header -->
-			<div
-				class="hidden text-xs font-medium text-gray-500 uppercase sm:grid sm:grid-cols-5 dark:text-neutral-500">
-				<div class="sm:col-span-2">Item</div>
-				<div class="text-start">Rate</div>
-				<div class="text-start">Qty</div>
-				<div class="text-end">Amount</div>
-			</div>
-			<div class="hidden border-b border-gray-200 sm:block dark:border-neutral-700"></div>
-
-			<!-- Table Rows -->
-			@foreach ($invoice->items as $item)
-				<div class="grid grid-cols-3 gap-2 sm:grid-cols-5">
-					<div class="col-span-full sm:col-span-2">
-						<h5 class="text-xs font-medium text-gray-500 uppercase sm:hidden dark:text-neutral-500">Item</h5>
-						<p class="font-medium text-gray-800 dark:text-neutral-200">{{ $item['name'] }}</p>
+<div class="max-w-[800px] mx-auto bg-white p-8 text-sm text-black font-sans">
+	<table class="w-full border-collapse">
+		<thead class="table-header-group">
+			<tr>
+				<td colspan="5" class="pb-8">
+					<!-- Header -->
+					<div class="flex justify-between items-start">
+						<div class="w-1/2">
+							<h1 class="font-bold text-xl uppercase mb-2">{{ $invoice->issuer_details['name'] }}</h1>
+							<div class="text-xs space-y-0.5 text-gray-600">
+								<p>{{ $invoice->issuer_details['address'] }}</p>
+								@if(isset($invoice->issuer_details['rc']))
+								<p>RC: {{ $invoice->issuer_details['rc'] }}</p> @endif
+								@if(isset($invoice->issuer_details['nif']))
+								<p>NIF: {{ $invoice->issuer_details['nif'] }}</p> @endif
+								@if(isset($invoice->issuer_details['ai']))
+								<p>AI: {{ $invoice->issuer_details['ai'] }}</p> @endif
+								@if(isset($invoice->issuer_details['nis']))
+								<p>NIS: {{ $invoice->issuer_details['nis'] }}</p> @endif
+								@if(isset($invoice->issuer_details['capital']))
+								<p>Capital social: {{ $invoice->issuer_details['capital'] }}</p> @endif
+								@if(isset($invoice->issuer_details['bank_account']))
+								<p>Compte bancaire: {{ $invoice->issuer_details['bank_account'] }}</p> @endif
+								<p>TEL: {{ $invoice->issuer_details['phone'] }}</p>
+								<p>EMAIL: {{ $invoice->issuer_details['email'] }}</p>
+							</div>
+						</div>
+						<div class="w-1/2 flex justify-end items-center">
+							@if ($settings->logo)
+								<img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" class="h-20 object-contain">
+							@else
+								<h2 class="text-2xl font-bold text-gray-400">{{ $invoice->issuer_details['name'] }}</h2>
+							@endif
+						</div>
 					</div>
-					<div>
-						<h5 class="text-xs font-medium text-gray-500 uppercase sm:hidden dark:text-neutral-500">Rate</h5>
-						<p class="text-gray-800 dark:text-neutral-200">{{ $item['rate'] }}</p>
+
+					<!-- Title -->
+					<div class="flex items-center my-8">
+						<div class="flex-grow border-t border-gray-400"></div>
+						<h2 class="mx-4 text-2xl font-bold uppercase">{{ __('Invoice') }}</h2>
+						<div class="flex-grow border-t border-gray-400"></div>
 					</div>
-					<div>
-						<h5 class="text-xs font-medium text-gray-500 uppercase sm:hidden dark:text-neutral-500">Qty</h5>
-						<p class="text-gray-800 dark:text-neutral-200">{{ $item['quantity'] }}</p>
+
+					<!-- Info Block -->
+					<div class="flex justify-between">
+						<div class="w-1/2">
+							<p class="text-xs text-gray-500 mb-1">{{ __('Customer') }}</p>
+							<h3 class="font-bold text-lg uppercase mb-1">{{ $invoice->customer_details['name'] }}</h3>
+							<div class="text-xs text-gray-600 space-y-0.5">
+								<p>{{ $invoice->customer_details['address'] }}</p>
+								@if(isset($invoice->customer_details['rc']))
+								<p>RC: {{ $invoice->customer_details['rc'] }}</p> @endif
+								@if(isset($invoice->customer_details['nif']))
+								<p>NIF: {{ $invoice->customer_details['nif'] }}</p> @endif
+								@if(isset($invoice->customer_details['ai']))
+								<p>AI: {{ $invoice->customer_details['ai'] }}</p> @endif
+								@if(isset($invoice->customer_details['nis']))
+								<p>NIS: {{ $invoice->customer_details['nis'] }}</p> @endif
+							</div>
+						</div>
+						<div class="w-1/3">
+							<div class="grid grid-cols-2 gap-y-1 text-sm">
+								<div class="font-bold">{{ __('Date') }}:</div>
+								<div>
+									{{ \Carbon\Carbon::parse($invoice->invoice_date)->locale(app()->getLocale())->isoFormat('DD MMMM YYYY') }}
+								</div>
+								<div class="font-bold">{{ __('Number') }}:</div>
+								<div>{{ $invoice->invoice_number }}</div>
+								<div class="font-bold">{{ __('Payment Terms') }}:</div>
+								<div>A terme</div>
+							</div>
+						</div>
 					</div>
-					<div class="text-end">
-						<h5 class="text-xs font-medium text-gray-500 uppercase sm:hidden dark:text-neutral-500">Amount</h5>
-						<p class="text-gray-800 dark:text-neutral-200">
-							<x-money :value="$item['total']" />
+				</td>
+			</tr>
+			<tr class="bg-black text-white text-xs uppercase">
+				<th class="py-2 px-2 border border-gray-600 w-12">{{ __('No.') }}</th>
+				<th class="py-2 px-2 border border-gray-600 text-left">{{ __('Description') }}</th>
+				<th class="py-2 px-2 border border-gray-600 w-24 whitespace-nowrap">{{ __('Rate') }}</th>
+				<th class="py-2 px-2 border border-gray-600 w-16">{{ __('Qty') }}</th>
+				<th class="py-2 px-2 border border-gray-600 w-28 whitespace-nowrap">{{ __('Amount') }}</th>
+			</tr>
+		</thead>
+		<tbody class="text-sm table-row-group">
+			@php
+				$totalHT = 0;
+			@endphp
+			@foreach ($invoice->items as $index => $item)
+				@php
+					$amount = $item['rate'] * $item['quantity'];
+					$totalHT += $amount;
+				@endphp
+				<tr class="break-inside-avoid">
+					<td class="py-2 px-2 border border-gray-400 text-center font-bold">{{ $index + 1 }}</td>
+					<td class="py-2 px-2 border border-gray-400">
+						<div class="font-bold">{!! $item['name'] !!}</div>
+					</td>
+					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
+						{{ number_format($item['rate'], 2, '.', ' ') }}
+						DZD
+					</td>
+					<td class="py-2 px-2 border border-gray-400 text-center">{{ $item['quantity'] }}</td>
+					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
+						{{ number_format($amount, 2, '.', ' ') }} DZD
+					</td>
+				</tr>
+			@endforeach
+			<tr class="break-inside-avoid">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }}</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+					{{ number_format($totalHT, 2, '.', ' ') }} DZD
+				</td>
+			</tr>
+			<tr class="break-inside-avoid">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Tax') }} (19%)</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+					{{ number_format($totalHT * 0.19, 2, '.', ' ') }} DZD
+				</td>
+			</tr>
+			<tr class="break-inside-avoid">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+					{{ number_format($totalHT * 1.19, 2, '.', ' ') }} DZD
+				</td>
+			</tr>
+
+			<!-- Spacer Row -->
+			<tr class="break-inside-avoid">
+				<td colspan="5" class="py-4 border-none"></td>
+			</tr>
+
+			<!-- Amount in Words -->
+			<tr class="break-inside-avoid">
+				<td colspan="5" class="border-none">
+					<div class="mb-8 text-sm">
+						<p class="uppercase text-gray-600 mb-1">ARRÊTÉ LA PRÉSENTE FACTURE A LA SOMME DE</p>
+						<p class="font-bold uppercase">
+							@php
+								$totalTTC = $totalHT * 1.19;
+								$formatter = new NumberFormatter(app()->getLocale(), NumberFormatter::SPELLOUT);
+								echo $formatter->format($totalTTC) . ' DINARS ALGÉRIENS';
+							@endphp
 						</p>
 					</div>
-				</div>
-				@if (!$loop->last)
-					<div class="border-b border-gray-200 sm:hidden dark:border-neutral-700"></div>
-				@endif
-			@endforeach
-		</div>
-	</div>
-	<!-- End Invoice Items Table -->
+				</td>
+			</tr>
 
-	<!-- Summary and Total -->
-	<div class="flex justify-end mt-8">
-		<dl class="flex gap-4">
-			<dt class="col-span-3 font-semibold text-gray-800">Total</dt>
-			<dd class="col-span-2 ">
-				<x-money value="{{ $invoice->total }}" />
-			</dd>
-		</dl>
-	</div>
-
-	<!-- End Summary -->
-
-	<!-- Footer Section -->
-	<div class="mt-8 sm:mt-12">
-		<h4 class="text-gray-800 dark:text-neutral-200">Thank you for your business!</h4>
-		<p class="text-gray-500 dark:text-neutral-500">
-			If you have any questions concerning this invoice, use the following contact information:
-		</p>
-		<div class="mt-2">
-			<p class="block text-gray-800 dark:text-neutral-200">{{ $invoice->issuer_details['email'] }}</p>
-			<p class="block mt-1 text-gray-800 dark:text-neutral-200">
-				{{ $invoice->issuer_details['phone'] }}
-			</p>
-		</div>
-	</div>
-
-	<p class="mt-5 text-sm text-gray-500 dark:text-neutral-500">© 2024 {{ $invoice->issuer_details['name'] }}</p>
+			<!-- Footer (QR & Signature) -->
+			<tr class="break-inside-avoid">
+				<td colspan="5" class="border-none">
+					<div class="flex justify-end items-end mt-4">
+						<div class="text-center">
+							@if ($settings->stamp)
+								<img src="{{ asset('storage/' . $settings->stamp) }}" alt="Stamp"
+									class="h-24 object-contain">
+							@endif
+						</div>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
 </div>
-<!-- End Card -->

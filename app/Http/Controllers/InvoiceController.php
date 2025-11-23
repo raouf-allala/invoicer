@@ -143,4 +143,53 @@ class InvoiceController extends Controller
 			->with('alert', alertify('Invoice status updated successfully!'));
 	}
 
+	public function edit(Invoice $invoice)
+	{
+		$this->authorize('update', $invoice);
+
+		$settings = Auth::user()->settings;
+		$customers = Auth::user()->customers;
+
+		return view('invoices.edit', compact('invoice', 'settings', 'customers'));
+	}
+
+	public function update(Request $request, Invoice $invoice)
+	{
+		$this->authorize('update', $invoice);
+
+		// Decode the items JSON string to an array
+		$request->merge(['items' => json_decode($request->input('items'), true)]);
+
+		$validated = $request->validate([
+			'customer_id' => 'required|exists:customers,id',
+			'due_date' => 'required|date',
+			'items' => 'required|array|min:1',
+			'items.*.name' => 'required|string|max:65535', // increased max for rich text
+			'items.*.quantity' => 'required|integer|min:1',
+			'items.*.rate' => 'required|numeric|min:0',
+		]);
+
+		$customer = Customer::findOrFail($validated['customer_id']);
+		$customerDetails = InvoiceService::composeCustomerDetails($customer);
+        // We might want to update issuer details too if settings changed, but usually we keep original issuer details?
+        // For now let's keep original issuer details to preserve history, or update if requested.
+        // Let's update them to current settings as per standard "edit" behavior in simple apps.
+		$settings = Auth::user()->settings;
+		$issuerDetails = InvoiceService::composeIssuerDetails($settings);
+
+		$invoice->update([
+			'customer_id' => $customer->id,
+			'customer_details' => $customerDetails,
+            'issuer_details' => $issuerDetails,
+			'due_date' => $validated['due_date'],
+			'items' => $request->input('items'),
+            // Recalculate total
+            'total' => collect($request->input('items'))->sum(fn($item) => $item['rate'] * $item['quantity']) * 1.19, // Assuming 19% tax is standard
+		]);
+
+		return redirect()
+			->route('invoices.show', $invoice->invoice_number)
+			->with('alert', alertify('Invoice updated successfully!'));
+	}
+
 }
