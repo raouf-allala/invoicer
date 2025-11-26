@@ -68,4 +68,9 @@ class Quote extends Model
         $this->items = $items;
         $this->total = $items->sum('total');
     }
+
+    public function getRouteKeyName()
+    {
+        return 'quote_number';
+    }
 }

@@ -6,10 +6,8 @@
                     {{ __('Devis') }} — <span
                         class="text-sm font-normal tracking-wider text-gray-500">{{ $quote->quote_number }}</span>
                 </h2>
-                <!-- Download PDF Button (Optional, if implemented) -->
-                <!--
                 <a class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm gap-x-2 hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
-                    href="#" target="_blank">
+                    href="{{ route('quotes.download', $quote) }}" target="_blank">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
                         class="size-4">
@@ -17,9 +15,8 @@
                         <path d="m6 11 6 6 6-6" />
                         <path d="M19 21H5" />
                     </svg>
-                    {{ __('PDF') }}
+                    {{ __('Print') }}
                 </a>
-                -->
                 @if($quote->status !== \App\Enums\QuoteStatus::CONVERTED)
                     <a class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-800 bg-white border border-gray-200 rounded-lg shadow-sm gap-x-2 hover:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none focus:outline-none focus:bg-gray-50 dark:bg-transparent dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
                         href="{{ route('quotes.edit', $quote) }}">

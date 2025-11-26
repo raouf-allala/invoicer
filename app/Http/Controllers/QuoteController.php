@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Quote;
-use App\Models\Invoice;
-use App\Models\Customer;
-use App\Models\Settings;
-use App\Enums\QuoteStatus;
 use App\Enums\InvoiceStatus;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Enums\QuoteStatus;
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Quote;
+use App\Models\Settings;
 use App\Services\QuoteService;
-use App\Services\InvoiceService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuoteController extends Controller
 {
@@ -27,7 +25,7 @@ class QuoteController extends Controller
         $customerIds = Auth::user()->customers()->pluck('id');
 
         $quotes = Quote::whereIn('customer_id', $customerIds)
-            ->when($filterStatus !== 'all', fn($q) => $q->where('status', $filterStatus))
+            ->when($filterStatus !== 'all', fn ($q) => $q->where('status', $filterStatus))
             ->orderBy($sortBy, 'desc')
             ->with('customer')
             ->latest()
@@ -40,7 +38,6 @@ class QuoteController extends Controller
     public function show(Quote $quote)
     {
         // $this->authorize('view', $quote); // TODO: Implement Policy
-
         $settings = Auth::user()->settings;
 
         return view('quotes.show', compact('quote', 'settings'));
@@ -49,7 +46,7 @@ class QuoteController extends Controller
     public function create()
     {
         $settings = Auth::user()->settings;
-        if (!$settings) {
+        if (! $settings) {
             return redirect()
                 ->route('settings.edit')
                 ->with('alert', alertify('Let\'s set up your information first!', 'info'));
@@ -86,14 +83,14 @@ class QuoteController extends Controller
 
         $customerIds = Auth::user()->customers()->pluck('id')->toArray();
 
-        if (!in_array($validated['customer_id'], $customerIds)) {
+        if (! in_array($validated['customer_id'], $customerIds)) {
             return redirect()->back()->withErrors(['customer_id' => 'Invalid customer selected.']);
         }
 
         $customer = Customer::findOrFail($validated['customer_id']);
         $settings = Auth::user()->settings;
 
-        if (!$settings) {
+        if (! $settings) {
             abort(403, 'Settings not found');
         }
 
@@ -144,7 +141,7 @@ class QuoteController extends Controller
 
         $customer = Customer::findOrFail($validated['customer_id']);
         $customerDetails = QuoteService::composeCustomerDetails($customer);
-        
+
         // Update issuer details to current settings? Or keep original?
         // Let's update to current settings as per InvoiceController logic
         $settings = Auth::user()->settings;
@@ -169,7 +166,7 @@ class QuoteController extends Controller
         // $this->authorize('update', $quote);
 
         if ($quote->status === QuoteStatus::CONVERTED) {
-             return redirect()
+            return redirect()
                 ->route('invoices.show', $quote->convertedInvoice->invoice_number)
                 ->with('alert', alertify('This quote is already converted.', 'info'));
         }
@@ -196,11 +193,12 @@ class QuoteController extends Controller
             ->route('invoices.show', $invoice->invoice_number)
             ->with('alert', alertify('Quote converted to Invoice successfully!'));
     }
-    
+
     public function destroy(Quote $quote)
     {
         // $this->authorize('delete', $quote);
         $quote->delete();
+
         return redirect()->route('quotes.index')->with('alert', alertify('Quote deleted successfully!'));
     }
 }

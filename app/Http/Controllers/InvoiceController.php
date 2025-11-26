@@ -2,194 +2,191 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Invoice;
-use App\Models\Customer;
-use App\Models\Settings;
 use App\Enums\InvoiceStatus;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
+use App\Models\Customer;
+use App\Models\Invoice;
+use App\Models\Settings;
 use App\Services\InvoiceService;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class InvoiceController extends Controller
 {
-	use AuthorizesRequests;
+    use AuthorizesRequests;
 
-	public function index(Request $request)
-	{
+    public function index(Request $request)
+    {
 
-		$filterStatus = $request->query('status', 'all');
-		$sortBy = $request->query('sort', 'created_at');
+        $filterStatus = $request->query('status', 'all');
+        $sortBy = $request->query('sort', 'created_at');
 
-		$customerIds = Auth::user()->customers()->pluck('id');
+        $customerIds = Auth::user()->customers()->pluck('id');
 
-		$invoices = Invoice::whereIn('customer_id', $customerIds)
-			->status($filterStatus)
-			->sortBy($sortBy)
-			->with('customer')
-			->latest()
-			->simplePaginate(10)
-			->withQueryString();
+        $invoices = Invoice::whereIn('customer_id', $customerIds)
+            ->status($filterStatus)
+            ->sortBy($sortBy)
+            ->with('customer')
+            ->latest()
+            ->simplePaginate(10)
+            ->withQueryString();
 
-		return view('invoices.index', compact('invoices'));
-	}
+        return view('invoices.index', compact('invoices'));
+    }
 
-	public function show(Invoice $invoice)
-	{
-		$this->authorize('view', $invoice);
+    public function show(Invoice $invoice)
+    {
+        $this->authorize('view', $invoice);
 
-		$invoice->load(['notes' => fn($query) => $query->orderBy('created_at', 'desc')]);
+        $invoice->load(['notes' => fn ($query) => $query->orderBy('created_at', 'desc')]);
 
-		$settings = Auth::user()->settings;
+        $settings = Auth::user()->settings;
 
-		return view('invoices.show', compact('invoice', 'settings'));
-	}
+        return view('invoices.show', compact('invoice', 'settings'));
+    }
 
-	public function create()
-	{
-		$settings = Auth::user()->settings;
-		if (!$settings) {
-			return redirect()
-				->route('settings.edit')
-				->with('alert', alertify('Let\'s set up your invoice information first!', 'info'));
-		}
+    public function create()
+    {
+        $settings = Auth::user()->settings;
+        if (! $settings) {
+            return redirect()
+                ->route('settings.edit')
+                ->with('alert', alertify('Let\'s set up your invoice information first!', 'info'));
+        }
 
-		$customers = Auth::user()->customers;
-		if ($customers->count() === 0) {
-			return redirect()
-				->route('customers.create')
-				->with('alert', alertify('Add a customer and you can create and assign invoices.', 'info'));
-		}
+        $customers = Auth::user()->customers;
+        if ($customers->count() === 0) {
+            return redirect()
+                ->route('customers.create')
+                ->with('alert', alertify('Add a customer and you can create and assign invoices.', 'info'));
+        }
 
-		$due_date = now()->addDays(3)->format('Y-m-d');
+        $due_date = now()->addDays(3)->format('Y-m-d');
 
-		return view('invoices.create', compact('customers', 'due_date'));
-	}
+        return view('invoices.create', compact('customers', 'due_date'));
+    }
 
-	public function store(Request $request)
-	{
+    public function store(Request $request)
+    {
 
+        // Decode the items JSON string to an array
+        $request->merge(['items' => json_decode($request->input('items'), true)]);
 
-		// Decode the items JSON string to an array
-		$request->merge(['items' => json_decode($request->input('items'), true)]);
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'due_date' => 'required|date|after:today',
+            'items' => 'required|array|min:1',
+            'items.*.name' => 'required|string|max:255',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.rate' => 'required|numeric|min:0',
+        ]);
 
-		$validated = $request->validate([
-			'customer_id' => 'required|exists:customers,id',
-			'due_date' => 'required|date|after:today',
-			'items' => 'required|array|min:1',
-			'items.*.name' => 'required|string|max:255',
-			'items.*.quantity' => 'required|integer|min:1',
-			'items.*.rate' => 'required|numeric|min:0',
-		]);
+        $customerIds = Auth::user()->customers()->pluck('id')->toArray();
 
-		$customerIds = Auth::user()->customers()->pluck('id')->toArray();
+        if (! in_array($validated['customer_id'], $customerIds)) {
+            return redirect()->back()->withErrors(['customer_id' => 'Invalid customer selected.']);
+        }
 
-		if (!in_array($validated['customer_id'], $customerIds)) {
-			return redirect()->back()->withErrors(['customer_id' => 'Invalid customer selected.']);
-		}
+        // Fetch customer and settings
 
-		// Fetch customer and settings
+        $customer = Customer::findOrFail($validated['customer_id']);
 
-		$customer = Customer::findOrFail($validated['customer_id']);
+        $settings = Auth::user()->settings;
 
+        if (! $settings) {
+            abort(403, 'Settings not found');
+        }
 
-		$settings = Auth::user()->settings;
+        // Compose customer and issuer details
 
-		if (!$settings) {
-			abort(403, 'Settings not found');
-		}
+        $customerDetails = InvoiceService::composeCustomerDetails($customer);
+        $issuerDetails = InvoiceService::composeIssuerDetails($settings);
 
-		// Compose customer and issuer details
+        $invoice = Invoice::create([
+            'customer_id' => $customer->id,
+            'customer_details' => $customerDetails,
+            'issuer_details' => $issuerDetails,
+            'invoice_date' => now()->format('Y-m-d'),
+            'due_date' => $request->input('due_date'),
+            'status' => InvoiceStatus::ISSUED,
+            'items' => $request->input('items'),
+        ]);
 
-		$customerDetails = InvoiceService::composeCustomerDetails($customer);
-		$issuerDetails = InvoiceService::composeIssuerDetails($settings);
+        return redirect()
+            ->route('invoices.show', $invoice->invoice_number)
+            ->with('alert', alertify('Invoice created successfully!'));
 
-		$invoice = Invoice::create([
-			'customer_id' => $customer->id,
-			'customer_details' => $customerDetails,
-			'issuer_details' => $issuerDetails,
-			'invoice_date' => now()->format('Y-m-d'),
-			'due_date' => $request->input('due_date'),
-			'status' => InvoiceStatus::ISSUED,
-			'items' => $request->input('items'),
-		]);
+    }
 
-		return redirect()
-			->route('invoices.show', $invoice->invoice_number)
-			->with('alert', alertify('Invoice created successfully!'));
+    public function updateStatus(Request $request, Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
 
-	}
+        // Validate the requested status, excluding the 'overdue' status
+        $validated = $request->validate([
+            'status' => [
+                'required',
+                Rule::enum(InvoiceStatus::class)->only(InvoiceStatus::fillableStatuses()),
+            ],
+        ]);
 
-	public function updateStatus(Request $request, Invoice $invoice)
-	{
-		$this->authorize('update', $invoice);
+        // TODO: Show validation errors to user
 
-		// Validate the requested status, excluding the 'overdue' status
-		$validated = $request->validate([
-			'status' => [
-				'required',
-				Rule::enum(InvoiceStatus::class)->only(InvoiceStatus::fillableStatuses()),
-			],
-		]);
+        // Update the invoice status
+        $invoice->update(['status' => $validated['status']]);
 
-		// TODO: Show validation errors to user
+        return redirect()
+            ->route('invoices.show', $invoice->invoice_number)
+            ->with('alert', alertify('Invoice status updated successfully!'));
+    }
 
-		// Update the invoice status
-		$invoice->update(['status' => $validated['status']]);
+    public function edit(Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
 
-		return redirect()
-			->route('invoices.show', $invoice->invoice_number)
-			->with('alert', alertify('Invoice status updated successfully!'));
-	}
+        $settings = Auth::user()->settings;
+        $customers = Auth::user()->customers;
 
-	public function edit(Invoice $invoice)
-	{
-		$this->authorize('update', $invoice);
+        return view('invoices.edit', compact('invoice', 'settings', 'customers'));
+    }
 
-		$settings = Auth::user()->settings;
-		$customers = Auth::user()->customers;
+    public function update(Request $request, Invoice $invoice)
+    {
+        $this->authorize('update', $invoice);
 
-		return view('invoices.edit', compact('invoice', 'settings', 'customers'));
-	}
+        // Decode the items JSON string to an array
+        $request->merge(['items' => json_decode($request->input('items'), true)]);
 
-	public function update(Request $request, Invoice $invoice)
-	{
-		$this->authorize('update', $invoice);
+        $validated = $request->validate([
+            'customer_id' => 'required|exists:customers,id',
+            'due_date' => 'required|date',
+            'items' => 'required|array|min:1',
+            'items.*.name' => 'required|string|max:65535', // increased max for rich text
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.rate' => 'required|numeric|min:0',
+        ]);
 
-		// Decode the items JSON string to an array
-		$request->merge(['items' => json_decode($request->input('items'), true)]);
-
-		$validated = $request->validate([
-			'customer_id' => 'required|exists:customers,id',
-			'due_date' => 'required|date',
-			'items' => 'required|array|min:1',
-			'items.*.name' => 'required|string|max:65535', // increased max for rich text
-			'items.*.quantity' => 'required|integer|min:1',
-			'items.*.rate' => 'required|numeric|min:0',
-		]);
-
-		$customer = Customer::findOrFail($validated['customer_id']);
-		$customerDetails = InvoiceService::composeCustomerDetails($customer);
+        $customer = Customer::findOrFail($validated['customer_id']);
+        $customerDetails = InvoiceService::composeCustomerDetails($customer);
         // We might want to update issuer details too if settings changed, but usually we keep original issuer details?
         // For now let's keep original issuer details to preserve history, or update if requested.
         // Let's update them to current settings as per standard "edit" behavior in simple apps.
-		$settings = Auth::user()->settings;
-		$issuerDetails = InvoiceService::composeIssuerDetails($settings);
+        $settings = Auth::user()->settings;
+        $issuerDetails = InvoiceService::composeIssuerDetails($settings);
 
-		$invoice->update([
-			'customer_id' => $customer->id,
-			'customer_details' => $customerDetails,
+        $invoice->update([
+            'customer_id' => $customer->id,
+            'customer_details' => $customerDetails,
             'issuer_details' => $issuerDetails,
-			'due_date' => $validated['due_date'],
-			'items' => $request->input('items'),
+            'due_date' => $validated['due_date'],
+            'items' => $request->input('items'),
             // Recalculate total
-            'total' => collect($request->input('items'))->sum(fn($item) => $item['rate'] * $item['quantity']) * 1.19, // Assuming 19% tax is standard
-		]);
+            'total' => collect($request->input('items'))->sum(fn ($item) => $item['rate'] * $item['quantity']) * 1.19, // Assuming 19% tax is standard
+        ]);
 
-		return redirect()
-			->route('invoices.show', $invoice->invoice_number)
-			->with('alert', alertify('Invoice updated successfully!'));
-	}
-
+        return redirect()
+            ->route('invoices.show', $invoice->invoice_number)
+            ->with('alert', alertify('Invoice updated successfully!'));
+    }
 }

@@ -59,6 +59,7 @@ Route::middleware('auth')->group(function () {
     // Quotes
     Route::resource('quotes', QuoteController::class);
     Route::post('/quotes/{quote}/convert', [QuoteController::class, 'convertToInvoice'])->name('quotes.convert');
+    Route::get('/quotes/download/{quote:quote_number}', \App\Http\Controllers\DownloadQuoteController::class)->name('quotes.download');
 });
 
 require __DIR__.'/auth.php';

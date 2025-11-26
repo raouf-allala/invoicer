@@ -137,7 +137,7 @@
             <tr class="break-inside-avoid">
                 <td colspan="5" class="border-none">
                     <div class="mb-8 text-sm">
-                        <p class="uppercase text-gray-600 mb-1">ARRÊTÉ LA PRÉSENTE FACTURE A LA SOMME DE</p>
+                        <p class="uppercase text-gray-600 mb-1">ARRÊTÉ LE PRÉSENT DEVIS A LA SOMME DE</p>
                         <p class="font-bold uppercase">
                             @php
                                 $totalTTC = $totalHT * 1.19;
