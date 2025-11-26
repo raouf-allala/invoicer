@@ -28,7 +28,6 @@
 				background-color: white;
 			}
 
-			/* Reset constraints */
 			.max-w-\[800px\] {
 				max-width: none !important;
 				width: 100% !important;
@@ -36,11 +35,9 @@
 				margin: 0 !important;
 			}
 
-			/* Force table structure */
 			table {
 				width: 100% !important;
-				border-collapse: separate !important;
-				/* Changed from collapse to separate for Chrome support */
+				border-collapse: collapse !important;
 				border-spacing: 0 !important;
 				page-break-inside: auto;
 			}
@@ -58,14 +55,14 @@
 				page-break-after: auto;
 			}
 
-			/* Fix borders when using border-collapse: separate */
-			td,
 			th {
-				border-color: #000 !important;
-				/* Ensure borders are black */
+				font-size: 10px !important;
 			}
 
-			/* Ensure content isn't hidden */
+			td {
+				font-size: 10px !important;
+			}
+
 			* {
 				overflow: visible !important;
 			}

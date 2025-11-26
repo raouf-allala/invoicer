@@ -9,7 +9,7 @@
 					<div class="flex justify-between items-start">
 						<div class="w-1/2">
 							<h1 class="font-bold text-xl uppercase mb-2">{{ $invoice->issuer_details['name'] }}</h1>
-							<div class="text-xs space-y-0.5 text-gray-600">
+							<div class="space-y-0.5 text-gray-600" style="font-size: 10px;">
 								<p>{{ $invoice->issuer_details['address'] }}</p>
 								@if(isset($invoice->issuer_details['rc']))
 								<p>RC: {{ $invoice->issuer_details['rc'] }}</p> @endif
@@ -43,12 +43,13 @@
 						<div class="flex-grow border-t border-gray-400"></div>
 					</div>
 
-					<!-- Info Block -->
 					<div class="flex justify-between">
 						<div class="w-1/2">
 							<p class="text-xs text-gray-500 mb-1">{{ __('Customer') }}</p>
-							<h3 class="font-bold text-lg uppercase mb-1">{{ $invoice->customer_details['name'] }}</h3>
-							<div class="text-xs text-gray-600 space-y-0.5">
+							<h3 class="font-bold text-lg uppercase mb-1" style="font-size: 15px;">
+								{{ $invoice->customer_details['name'] }}
+							</h3>
+							<div class="text-gray-600 space-y-0.5" style="font-size: 10px;">
 								<p>{{ $invoice->customer_details['address'] }}</p>
 								@if(isset($invoice->customer_details['rc']))
 								<p>RC: {{ $invoice->customer_details['rc'] }}</p> @endif
@@ -62,25 +63,31 @@
 						</div>
 						<div class="w-1/3">
 							<div class="grid grid-cols-2 gap-y-1 text-sm">
-								<div class="font-bold">{{ __('Date') }}:</div>
-								<div>
+								<div class="font-bold" style="font-size: 10px;">{{ __('Date') }}:</div>
+								<div style="font-size: 10px;">
 									{{ \Carbon\Carbon::parse($invoice->invoice_date)->locale(app()->getLocale())->isoFormat('DD MMMM YYYY') }}
 								</div>
-								<div class="font-bold">{{ __('Number') }}:</div>
-								<div>{{ $invoice->invoice_number }}</div>
-								<div class="font-bold">{{ __('Payment Terms') }}:</div>
-								<div>A terme</div>
+								<div class="font-bold" style="font-size: 10px;">{{ __('Number') }}:</div>
+								<div style="font-size: 10px;">{{ $invoice->invoice_number }}</div>
+								<div class="font-bold" style="font-size: 10px;">{{ __('Payment Terms') }}:</div>
+								<div style="font-size: 10px;">A terme</div>
 							</div>
 						</div>
 					</div>
 				</td>
 			</tr>
 			<tr class="bg-black text-white text-xs uppercase">
-				<th class="py-2 px-2 border border-gray-600 w-12">{{ __('No.') }}</th>
-				<th class="py-2 px-2 border border-gray-600 text-left">{{ __('Description') }}</th>
-				<th class="py-2 px-2 border border-gray-600 w-24 whitespace-nowrap">{{ __('Rate') }}</th>
-				<th class="py-2 px-2 border border-gray-600 w-16">{{ __('Qty') }}</th>
-				<th class="py-2 px-2 border border-gray-600 w-28 whitespace-nowrap">{{ __('Amount') }}</th>
+				<th class="py-1 px-1 border border-gray-600 w-12" style="font-size: 10px;">{{ __('No.') }}</th>
+				<th class="py-1 px-1 border border-gray-600 text-left text-xs" style="font-size: 10px;">
+					{{ __('Description') }}
+				</th>
+				<th class="py-1 px-1 border border-gray-600 w-24 whitespace-nowrap" style="font-size: 10px;">
+					{{ __('Rate') }}
+				</th>
+				<th class="py-1 px-1 border border-gray-600 w-16" style="font-size: 10px;">{{ __('Qty') }}</th>
+				<th class="py-1 px-1 border border-gray-600 w-28 whitespace-nowrap" style="font-size: 10px;">
+					{{ __('Amount') }}
+				</th>
 			</tr>
 		</thead>
 		<tbody class="text-sm table-row-group">
@@ -95,33 +102,41 @@
 				<tr class="break-inside-avoid">
 					<td class="py-2 px-2 border border-gray-400 text-center font-bold">{{ $index + 1 }}</td>
 					<td class="py-2 px-2 border border-gray-400">
-						<div>{!! $item['name'] !!}</div>
+						<div style="font-size: 10px;">{!! $item['name'] !!}</div>
 					</td>
-					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
+					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap" style="font-size: 10px;">
 						{{ number_format($item['rate'], 2, '.', ' ') }}
 						DZD
 					</td>
-					<td class="py-2 px-2 border border-gray-400 text-center">{{ $item['quantity'] }}</td>
-					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
+					<td class="py-2 px-2 border border-gray-400 text-center" style="font-size: 10px;">
+						{{ $item['quantity'] }}
+					</td>
+					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap" style="font-size: 10px;">
 						{{ number_format($amount, 2, '.', ' ') }} DZD
 					</td>
 				</tr>
 			@endforeach
 			<tr class="break-inside-avoid">
-				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }}</td>
-				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
+					{{ __('Total HT') }}
+				</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
 					{{ number_format($totalHT, 2, '.', ' ') }} DZD
 				</td>
 			</tr>
 			<tr class="break-inside-avoid">
-				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Tax') }} (19%)</td>
-				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
+					{{ __('Tax') }}
+				</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
 					{{ number_format($totalHT * 0.19, 2, '.', ' ') }} DZD
 				</td>
 			</tr>
 			<tr class="break-inside-avoid">
-				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
-				<td class="py-2 px-2 border border-gray-400 text-center font-bold">
+				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
+					{{ __('Total') }} TTC
+				</td>
+				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
 					{{ number_format($totalHT * 1.19, 2, '.', ' ') }} DZD
 				</td>
 			</tr>
@@ -135,8 +150,9 @@
 			<tr class="break-inside-avoid">
 				<td colspan="5" class="border-none">
 					<div class="mb-8 text-sm">
-						<p class="uppercase text-gray-600 mb-1">ARRÊTÉ LA PRÉSENTE FACTURE A LA SOMME DE</p>
-						<p class="font-bold uppercase">
+						<p class="uppercase text-gray-600 mb-1" style="font-size: 12px;">ARRÊTÉ LA PRÉSENTE FACTURE A LA
+							SOMME DE</p>
+						<p class="font-bold uppercase" style="font-size: 12px;">
 							@php
 								$totalTTC = $totalHT * 1.19;
 								$formatter = new NumberFormatter(app()->getLocale(), NumberFormatter::SPELLOUT);
