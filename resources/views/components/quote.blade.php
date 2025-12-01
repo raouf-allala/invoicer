@@ -68,10 +68,12 @@
                                 </div>
                                 <div class="font-bold">{{ __('Number') }}:</div>
                                 <div>{{ $quote->quote_number }}</div>
-                                <div class="font-bold">{{ __('Valid Until') }}:</div>
+                                {{-- <div class="font-bold">{{ __('Valid Until') }}:</div>
                                 <div>
-                                    {{ \Carbon\Carbon::parse($quote->due_date)->locale(app()->getLocale())->isoFormat('DD MMMM YYYY') }}
-                                </div>
+                                    {{
+                                    \Carbon\Carbon::parse($quote->due_date)->locale(app()->getLocale())->isoFormat('DD
+                                    MMMM YYYY') }}
+                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -115,18 +117,25 @@
                     {{ number_format($totalHT, 2, '.', ' ') }} DZD
                 </td>
             </tr>
-            <tr class="break-inside-avoid">
+            {{-- <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Tax') }} (19%)</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
                     {{ number_format($totalHT * 0.19, 2, '.', ' ') }} DZD
                 </td>
-            </tr>
-            <tr class="break-inside-avoid">
+            </tr> --}}
+            {{-- <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
                     {{ number_format($totalHT * 1.19, 2, '.', ' ') }} DZD
                 </td>
-            </tr>
+            </tr> --}}
+
+            {{-- <tr class="break-inside-avoid">
+                <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
+                <td class="py-2 px-2 border border-gray-400 text-center font-bold">
+                    {{ number_format($totalHT, 2, '.', ' ') }} DZD
+                </td>
+            </tr> --}}
 
             <!-- Spacer Row -->
             <tr class="break-inside-avoid">
@@ -140,7 +149,8 @@
                         <p class="uppercase text-gray-600 mb-1">ARRÊTÉ LE PRÉSENT DEVIS A LA SOMME DE</p>
                         <p class="font-bold uppercase">
                             @php
-                                $totalTTC = $totalHT * 1.19;
+                                // $totalTTC = $totalHT * 1.19;
+                                $totalTTC = $totalHT;
                                 $formatter = new NumberFormatter(app()->getLocale(), NumberFormatter::SPELLOUT);
                                 echo $formatter->format($totalTTC) . ' DINARS ALGÉRIENS';
                             @endphp
@@ -150,18 +160,18 @@
             </tr>
 
             <!-- Footer (QR & Signature) -->
-            <tr class="break-inside-avoid">
+            {{-- <tr class="break-inside-avoid">
                 <td colspan="5" class="border-none">
                     <div class="flex justify-end items-end mt-4">
                         <div class="text-center">
                             @if ($settings->stamp)
-                                <img src="{{ asset('storage/' . $settings->stamp) }}" alt="Stamp"
-                                    class="h-24 object-contain">
+                            <img src="{{ asset('storage/' . $settings->stamp) }}" alt="Stamp"
+                                class="h-24 object-contain">
                             @endif
                         </div>
                     </div>
                 </td>
-            </tr>
+            </tr> --}}
         </tbody>
     </table>
 </div>

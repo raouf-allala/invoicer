@@ -9,7 +9,7 @@
 					<div class="flex justify-between items-start">
 						<div class="w-1/2">
 							<h1 class="font-bold text-xl uppercase mb-2">{{ $invoice->issuer_details['name'] }}</h1>
-							<div class="space-y-0.5 text-gray-600" style="font-size: 10px;">
+							<div class="text-gray-600" style="font-size: 10px;">
 								<p>{{ $invoice->issuer_details['address'] }}</p>
 								@if(isset($invoice->issuer_details['rc']))
 								<p>RC: {{ $invoice->issuer_details['rc'] }}</p> @endif
@@ -37,7 +37,7 @@
 					</div>
 
 					<!-- Title -->
-					<div class="flex items-center my-8">
+					<div class="flex items-center mb-8 mt-2">
 						<div class="flex-grow border-t border-gray-400"></div>
 						<h2 class="mx-4 text-2xl font-bold uppercase">{{ __('Invoice') }}</h2>
 						<div class="flex-grow border-t border-gray-400"></div>
@@ -106,13 +106,13 @@
 					</td>
 					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap" style="font-size: 10px;">
 						{{ number_format($item['rate'], 2, '.', ' ') }}
-						DZD
+						{{ $invoice->currency }}
 					</td>
 					<td class="py-2 px-2 border border-gray-400 text-center" style="font-size: 10px;">
 						{{ $item['quantity'] }}
 					</td>
 					<td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap" style="font-size: 10px;">
-						{{ number_format($amount, 2, '.', ' ') }} DZD
+						{{ number_format($amount, 2, '.', ' ') }} {{ $invoice->currency }}
 					</td>
 				</tr>
 			@endforeach
@@ -121,15 +121,33 @@
 					{{ __('Total HT') }}
 				</td>
 				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
-					{{ number_format($totalHT, 2, '.', ' ') }} DZD
+					{{ number_format($totalHT, 2, '.', ' ') }} {{ $invoice->currency }}
 				</td>
 			</tr>
+			@if($invoice->discount > 0)
+				<tr class="break-inside-avoid">
+					<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
+						{{ __('Discount') }}
+					</td>
+					<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
+						-{{ number_format($invoice->discount, 2, '.', ' ') }} {{ $invoice->currency }}
+					</td>
+				</tr>
+				<tr class="break-inside-avoid">
+					<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
+						{{ __('Net HT') }}
+					</td>
+					<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
+						{{ number_format($totalHT - $invoice->discount, 2, '.', ' ') }} {{ $invoice->currency }}
+					</td>
+				</tr>
+			@endif
 			<tr class="break-inside-avoid">
 				<td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold" style="font-size: 10px;">
 					{{ __('Tax') }}
 				</td>
 				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
-					{{ number_format($totalHT * 0.19, 2, '.', ' ') }} DZD
+					{{ number_format(($totalHT - $invoice->discount) * 0.19, 2, '.', ' ') }} {{ $invoice->currency }}
 				</td>
 			</tr>
 			<tr class="break-inside-avoid">
@@ -137,7 +155,7 @@
 					{{ __('Total') }} TTC
 				</td>
 				<td class="py-2 px-2 border border-gray-400 text-center font-bold" style="font-size: 10px;">
-					{{ number_format($totalHT * 1.19, 2, '.', ' ') }} DZD
+					{{ number_format(($totalHT - $invoice->discount) * 1.19, 2, '.', ' ') }} {{ $invoice->currency }}
 				</td>
 			</tr>
 
@@ -154,9 +172,9 @@
 							SOMME DE</p>
 						<p class="font-bold uppercase" style="font-size: 12px;">
 							@php
-								$totalTTC = $totalHT * 1.19;
+								$totalTTC = ($totalHT - $invoice->discount) * 1.19;
 								$formatter = new NumberFormatter(app()->getLocale(), NumberFormatter::SPELLOUT);
-								echo $formatter->format($totalTTC) . ' DINARS ALGÉRIENS';
+								echo $formatter->format($totalTTC) . ' ' . $invoice->currency;
 							@endphp
 						</p>
 					</div>

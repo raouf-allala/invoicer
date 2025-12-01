@@ -21,6 +21,7 @@ class Quote extends Model
         'items' => 'array',
         'quote_date' => 'date',
         'due_date' => 'date',
+        'discount' => 'decimal:2',
     ];
 
     public function customer(): BelongsTo

@@ -7,10 +7,12 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <form method="post" action="{{ route('quotes.store') }}" x-data="invoiceEditor()">
+            <form method="post" action="{{ route('quotes.store') }}" x-data="invoiceEditor([], 'DZD', 0, 19, true)">
                 @csrf
                 <!-- Hidden input for items -->
                 <input type="hidden" name="items" :value="JSON.stringify(items)">
+                <input type="hidden" name="tva_rate" x-model="tvaRate">
+                <input type="hidden" name="tva_enabled" x-model="tvaEnabled">
 
                 <div class="max-w-[800px] mx-auto bg-white p-8 text-sm text-black font-sans shadow-lg">
                     <!-- Header -->
@@ -73,6 +75,16 @@
                                 <div class="font-bold">{{ __('Date') }}:</div>
                                 <input type="date" name="quote_date" value="{{ $quote_date }}"
                                     class="border-none p-0 text-sm focus:ring-0 bg-transparent">
+                                <div class="font-bold">{{ __('Currency') }}:</div>
+                                <div>
+                                    <select name="currency" x-model="currency"
+                                        class="border-none p-0 text-sm focus:ring-0 bg-transparent">
+                                        <option value="DZD">DZD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                        <option value="DT">DT</option>
+                                    </select>
+                                </div>
                                 <div class="font-bold">{{ __('Number') }}:</div>
                                 <div class="text-gray-400">(Auto-generated)</div>
                                 <div class="font-bold">{{ __('Valid Until') }}:</div>
@@ -113,7 +125,7 @@
                                             placeholder="1">
                                     </td>
                                     <td class="py-2 px-2 border border-gray-400 text-center">
-                                        <span x-text="calculateTotal(item) + ' DZD'"></span>
+                                        <span x-text="calculateTotal(item) + ' ' + currency"></span>
                                     </td>
                                     <td class="py-2 px-2 border border-gray-400 text-center">
                                         <button type="button" @click="removeItem(index)"
@@ -140,15 +152,36 @@
                         <div class="w-1/3 border border-black">
                             <div class="flex justify-between p-2 border-b border-gray-400">
                                 <span class="font-bold">{{ __('Subtotal') }}</span>
-                                <span x-text="subtotal + ' DZD'"></span>
+                                <span x-text="subtotal + ' ' + currency"></span>
                             </div>
-                            <div class="flex justify-between p-2 border-b border-gray-400">
-                                <span class="font-bold">{{ __('Tax') }} (19%)</span>
-                                <span x-text="tax + ' DZD'"></span>
+                            <div class="flex justify-between p-2 border-b border-gray-400 items-center">
+                                <span class="font-bold">{{ __('Discount') }}</span>
+                                <div class="flex items-center">
+                                    <span class="mr-1">-</span>
+                                    <input type="number" name="discount" x-model="discount" step="0.01" min="0"
+                                        class="w-20 border-none p-0 text-right focus:ring-0 bg-transparent"
+                                        placeholder="0.00">
+                                    <span x-text="currency" class="ml-1"></span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between p-2 border-b border-gray-400 items-center">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" x-model="tvaEnabled" id="tva_enabled"
+                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <label for="tva_enabled" class="font-bold cursor-pointer">{{ __('Tax') }}
+                                        (TVA)</label>
+                                    <select x-model.number="tvaRate" :disabled="!tvaEnabled"
+                                        class="border-none p-0 text-sm focus:ring-0 bg-transparent disabled:opacity-50">
+                                        <option value="0">0%</option>
+                                        <option value="9">9%</option>
+                                        <option value="19">19%</option>
+                                    </select>
+                                </div>
+                                <span x-text="tax + ' ' + currency"></span>
                             </div>
                             <div class="flex justify-between p-2 bg-gray-100">
                                 <span class="font-bold">{{ __('Total') }}</span>
-                                <span class="font-bold" x-text="total + ' DZD'"></span>
+                                <span class="font-bold" x-text="total + ' ' + currency"></span>
                             </div>
                         </div>
                     </div>

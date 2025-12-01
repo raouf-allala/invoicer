@@ -72,7 +72,6 @@ class InvoiceController extends Controller
 
         // Decode the items JSON string to an array
         $request->merge(['items' => json_decode($request->input('items'), true)]);
-
         $validated = $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'due_date' => 'required|date|after:today',
@@ -80,7 +79,17 @@ class InvoiceController extends Controller
             'items.*.name' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.rate' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3',
+            'discount' => 'nullable|numeric|min:0',
+            'tva_rate' => 'required|numeric|in:0,9,19',
+            'tva_enabled' => 'required|string|in:true,false',
         ]);
+
+        if ($validated['tva_enabled'] === 'true') {
+            $validated['tva_enabled'] = true;
+        } else {
+            $validated['tva_enabled'] = false;
+        }
 
         $customerIds = Auth::user()->customers()->pluck('id')->toArray();
 
@@ -111,6 +120,10 @@ class InvoiceController extends Controller
             'due_date' => $request->input('due_date'),
             'status' => InvoiceStatus::ISSUED,
             'items' => $request->input('items'),
+            'currency' => $validated['currency'],
+            'discount' => $validated['discount'] ?? 0,
+            'tva_rate' => $validated['tva_rate'],
+            'tva_enabled' => $validated['tva_enabled'],
         ]);
 
         return redirect()
@@ -165,6 +178,10 @@ class InvoiceController extends Controller
             'items.*.name' => 'required|string|max:65535', // increased max for rich text
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.rate' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3',
+            'discount' => 'nullable|numeric|min:0',
+            'tva_rate' => 'required|numeric|in:0,9,19',
+            'tva_enabled' => 'required|boolean',
         ]);
 
         $customer = Customer::findOrFail($validated['customer_id']);
@@ -181,12 +198,28 @@ class InvoiceController extends Controller
             'issuer_details' => $issuerDetails,
             'due_date' => $validated['due_date'],
             'items' => $request->input('items'),
+            'currency' => $validated['currency'],
+            'discount' => $validated['discount'] ?? 0,
+            'tva_rate' => $validated['tva_rate'],
+            'tva_enabled' => $validated['tva_enabled'],
             // Recalculate total
-            'total' => collect($request->input('items'))->sum(fn ($item) => $item['rate'] * $item['quantity']) * 1.19, // Assuming 19% tax is standard
+            'total' => $this->calculateTotal($request->input('items'), $validated['discount'] ?? 0, $validated['tva_rate'], $validated['tva_enabled']),
         ]);
 
         return redirect()
             ->route('invoices.show', $invoice->invoice_number)
             ->with('alert', alertify('Invoice updated successfully!'));
+    }
+
+    private function calculateTotal($items, $discount, $tvaRate, $tvaEnabled)
+    {
+        $subtotal = collect($items)->sum(fn ($item) => $item['rate'] * $item['quantity']);
+        $afterDiscount = $subtotal - $discount;
+
+        if (! $tvaEnabled) {
+            return max(0, $afterDiscount);
+        }
+
+        return max(0, $afterDiscount * (1 + $tvaRate / 100));
     }
 }

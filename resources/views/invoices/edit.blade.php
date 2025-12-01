@@ -8,18 +8,21 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <form method="post" action="{{ route('invoices.update', $invoice) }}"
-                x-data="invoiceEditor({{ json_encode($invoice->items) }})">
+                x-data="invoiceEditor({{ json_encode($invoice->items) }}, '{{ $invoice->currency }}', {{ $invoice->discount }}, {{ $invoice->tva_rate ?? 19 }}, {{ $invoice->tva_enabled ? 'true' : 'false' }})">
                 @csrf
                 @method('PUT')
                 <!-- Hidden input for items -->
                 <input type="hidden" name="items" :value="JSON.stringify(items)">
+                <input type="hidden" name="tva_rate" x-model="tvaRate">
+                <input type="hidden" name="tva_enabled" x-model="tvaEnabled">
 
                 <div class="max-w-[800px] mx-auto bg-white p-8 text-sm text-black font-sans shadow-lg">
                     <!-- Header -->
                     <div class="flex justify-between items-start">
                         <div class="w-1/2">
                             <h1 class="font-bold text-xl uppercase mb-2">
-                                {{ $invoice->issuer_details['name'] ?? __('Company Name') }}</h1>
+                                {{ $invoice->issuer_details['name'] ?? __('Company Name') }}
+                            </h1>
                             <div class="text-xs space-y-0.5 text-gray-600">
                                 <p>{{ $invoice->issuer_details['address'] }}</p>
                                 @if(isset($invoice->issuer_details['rc']))
@@ -39,7 +42,8 @@
                                 <img src="{{ asset('storage/' . $settings->logo) }}" alt="Logo" class="h-20 object-contain">
                             @else
                                 <h2 class="text-2xl font-bold text-gray-400">
-                                    {{ $invoice->issuer_details['name'] ?? __('Logo') }}</h2>
+                                    {{ $invoice->issuer_details['name'] ?? __('Logo') }}
+                                </h2>
                             @endif
                         </div>
                     </div>
@@ -76,6 +80,15 @@
                                 <div>{{ $invoice->invoice_number }}</div>
                                 <div class="font-bold">{{ __('Payment Terms') }}:</div>
                                 <div>A terme</div>
+                                <div class="font-bold">{{ __('Currency') }}:</div>
+                                <div>
+                                    <select name="currency" x-model="currency"
+                                        class="border-none p-0 text-sm focus:ring-0 bg-transparent">
+                                        <option value="DZD">DZD</option>
+                                        <option value="EUR">EUR</option>
+                                        <option value="USD">USD</option>
+                                    </select>
+                                </div>
                                 <div class="font-bold">{{ __('Due Date') }}:</div>
                                 <input type="date" name="due_date" value="{{ $invoice->due_date }}"
                                     class="border-none p-0 text-sm focus:ring-0 bg-transparent">
@@ -114,7 +127,7 @@
                                             placeholder="1">
                                     </td>
                                     <td class="py-2 px-2 border border-gray-400 text-center">
-                                        <span x-text="calculateTotal(item) + ' DZD'"></span>
+                                        <span x-text="calculateTotal(item) + ' ' + currency"></span>
                                     </td>
                                     <td class="py-2 px-2 border border-gray-400 text-center">
                                         <button type="button" @click="removeItem(index)"
@@ -141,15 +154,36 @@
                         <div class="w-1/3 border border-black">
                             <div class="flex justify-between p-2 border-b border-gray-400">
                                 <span class="font-bold">{{ __('Subtotal') }}</span>
-                                <span x-text="subtotal + ' DZD'"></span>
+                                <span x-text="subtotal + ' ' + currency"></span>
                             </div>
-                            <div class="flex justify-between p-2 border-b border-gray-400">
-                                <span class="font-bold">{{ __('Tax') }} (19%)</span>
-                                <span x-text="tax + ' DZD'"></span>
+                            <div class="flex justify-between p-2 border-b border-gray-400 items-center">
+                                <span class="font-bold">{{ __('Discount') }}</span>
+                                <div class="flex items-center">
+                                    <span class="mr-1">-</span>
+                                    <input type="number" name="discount" x-model="discount" step="0.01" min="0"
+                                        class="w-20 border-none p-0 text-right focus:ring-0 bg-transparent"
+                                        placeholder="0.00">
+                                    <span x-text="currency" class="ml-1"></span>
+                                </div>
+                            </div>
+                            <div class="flex justify-between p-2 border-b border-gray-400 items-center">
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" x-model="tvaEnabled" id="tva_enabled"
+                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                    <label for="tva_enabled" class="font-bold cursor-pointer">{{ __('Tax') }}
+                                        (TVA)</label>
+                                    <select x-model.number="tvaRate" :disabled="!tvaEnabled"
+                                        class="border-none p-0 text-sm focus:ring-0 bg-transparent disabled:opacity-50">
+                                        <option value="0">0%</option>
+                                        <option value="9">9%</option>
+                                        <option value="19">19%</option>
+                                    </select>
+                                </div>
+                                <span x-text="tax + ' ' + currency"></span>
                             </div>
                             <div class="flex justify-between p-2 bg-gray-100">
                                 <span class="font-bold">{{ __('Total') }}</span>
-                                <span class="font-bold" x-text="total + ' DZD'"></span>
+                                <span class="font-bold" x-text="total + ' ' + currency"></span>
                             </div>
                         </div>
                     </div>

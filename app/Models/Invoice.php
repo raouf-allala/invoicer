@@ -22,6 +22,7 @@ class Invoice extends Model
 		'customer_details' => 'array',
 		'issuer_details' => 'array',
 		'items' => 'array',
+		'discount' => 'decimal:2',
 	];
 
 	public function customer(): BelongsTo

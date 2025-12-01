@@ -79,7 +79,17 @@ class QuoteController extends Controller
             'items.*.name' => 'required|string|max:255',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.rate' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3',
+            'discount' => 'nullable|numeric|min:0',
+            'tva_rate' => 'required|numeric|in:0,9,19',
+            'tva_enabled' => 'required|string|in:true,false',
         ]);
+
+        if ($validated['tva_enabled'] === 'true') {
+            $validated['tva_enabled'] = true;
+        } else {
+            $validated['tva_enabled'] = false;
+        }
 
         $customerIds = Auth::user()->customers()->pluck('id')->toArray();
 
@@ -106,6 +116,10 @@ class QuoteController extends Controller
             'due_date' => $validated['due_date'],
             'status' => QuoteStatus::PENDING,
             'items' => $request->input('items'),
+            'currency' => $validated['currency'],
+            'discount' => $validated['discount'] ?? 0,
+            'tva_rate' => $validated['tva_rate'],
+            'tva_enabled' => $validated['tva_enabled'],
         ]);
 
         return redirect()
@@ -137,6 +151,10 @@ class QuoteController extends Controller
             'items.*.name' => 'required|string|max:65535',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.rate' => 'required|numeric|min:0',
+            'currency' => 'required|string|max:3',
+            'discount' => 'nullable|numeric|min:0',
+            'tva_rate' => 'required|numeric|in:0,9,19',
+            'tva_enabled' => 'required|boolean',
         ]);
 
         $customer = Customer::findOrFail($validated['customer_id']);
@@ -154,6 +172,10 @@ class QuoteController extends Controller
             'quote_date' => $validated['quote_date'],
             'due_date' => $validated['due_date'],
             'items' => $request->input('items'),
+            'currency' => $validated['currency'],
+            'discount' => $validated['discount'] ?? 0,
+            'tva_rate' => $validated['tva_rate'],
+            'tva_enabled' => $validated['tva_enabled'],
         ]);
 
         return redirect()
@@ -181,6 +203,10 @@ class QuoteController extends Controller
             'status' => InvoiceStatus::ISSUED,
             'items' => $quote->items,
             'total' => $quote->total,
+            'currency' => $quote->currency,
+            'discount' => $quote->discount,
+            'tva_rate' => $quote->tva_rate,
+            'tva_enabled' => $quote->tva_enabled,
         ]);
 
         // Update Quote status
