@@ -76,7 +76,7 @@ class QuoteController extends Controller
             'quote_date' => 'required|date',
             'due_date' => 'nullable|date|after_or_equal:quote_date',
             'items' => 'required|array|min:1',
-            'items.*.name' => 'required|string|max:255',
+            'items.*.name' => 'required|string',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.rate' => 'required|numeric|min:0',
             'currency' => 'required|string|max:3',

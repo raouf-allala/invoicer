@@ -103,37 +103,51 @@
                     </td>
                     <td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
                         {{ number_format($item['rate'], 2, '.', ' ') }}
-                        DZD
+                        EUR
                     </td>
                     <td class="py-2 px-2 border border-gray-400 text-center">{{ $item['quantity'] }}</td>
                     <td class="py-2 px-2 border border-gray-400 text-center whitespace-nowrap">
-                        {{ number_format($amount, 2, '.', ' ') }} DZD
+                        {{ number_format($amount, 2, '.', ' ') }} EUR
                     </td>
                 </tr>
             @endforeach
             <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }}</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
-                    {{ number_format($totalHT, 2, '.', ' ') }} DZD
+                    {{ number_format($totalHT, 2, '.', ' ') }} EUR
                 </td>
             </tr>
+            <tr class="break-inside-avoid">
+                <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">Remise</td>
+                <td class="py-2 px-2 border border-gray-400 text-center font-bold">
+                    {{ number_format($quote->discount, 2, '.', ' ') }} EUR
+                </td>
+            </tr>
+
+            <tr class="break-inside-avoid">
+                <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">Total Remisé</td>
+                <td class="py-2 px-2 border border-gray-400 text-center font-bold">
+                    {{ number_format($totalHT - $quote->discount, 2, '.', ' ') }} EUR
+                </td>
+            </tr>
+
             {{-- <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Tax') }} (19%)</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
-                    {{ number_format($totalHT * 0.19, 2, '.', ' ') }} DZD
+                    {{ number_format($totalHT * 0.19, 2, '.', ' ') }} EUR
                 </td>
             </tr> --}}
             {{-- <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
-                    {{ number_format($totalHT * 1.19, 2, '.', ' ') }} DZD
+                    {{ number_format($totalHT * 1.19, 2, '.', ' ') }} EUR
                 </td>
             </tr> --}}
 
             {{-- <tr class="break-inside-avoid">
                 <td colspan="4" class="py-2 px-2 border border-gray-400 text-right font-bold">{{ __('Total') }} TTC</td>
                 <td class="py-2 px-2 border border-gray-400 text-center font-bold">
-                    {{ number_format($totalHT, 2, '.', ' ') }} DZD
+                    {{ number_format($totalHT, 2, '.', ' ') }} EUR
                 </td>
             </tr> --}}
 
@@ -150,9 +164,9 @@
                         <p class="font-bold uppercase">
                             @php
                                 // $totalTTC = $totalHT * 1.19;
-                                $totalTTC = $totalHT;
+                                $totalTTC = $totalHT - $quote->discount;
                                 $formatter = new NumberFormatter(app()->getLocale(), NumberFormatter::SPELLOUT);
-                                echo $formatter->format($totalTTC) . ' DINARS ALGÉRIENS';
+                                echo $formatter->format($totalTTC) . ' EURO';
                             @endphp
                         </p>
                     </div>
